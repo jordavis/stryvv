@@ -1,27 +1,27 @@
 const stages = [
   {
+    timeframe: "Day 1",
+    title: "Know Yourself",
+    description:
+      "Take the 10-minute survey and get your Money Mindset profile. Understand your financial personality for the first time — no jargon, no judgment.",
+  },
+  {
+    timeframe: "Day 2",
+    title: "Know Each Other",
+    description:
+      "Invite your partner. When they complete their survey, you both unlock the side-by-side comparison. See where you align and where you differ.",
+  },
+  {
     timeframe: "Week 1",
-    title: "Quick Win",
+    title: "Start Talking",
     description:
-      "Automate your first workflow and reclaim 5+ hours. See results immediately without changing how your team works.",
+      "Use your personalized conversation starters to open up money discussions that actually go somewhere. Turn friction into understanding.",
   },
   {
-    timeframe: "Month 1",
-    title: "Compound",
+    timeframe: "Month 1+",
+    title: "Build Together",
     description:
-      "Connect your tools, eliminate data silos, and watch your efficiency metrics climb as automations stack.",
-  },
-  {
-    timeframe: "Month 3",
-    title: "Advantage",
-    description:
-      "Your team operates at a level your competitors can't match. Strategic decisions are backed by real-time data.",
-  },
-  {
-    timeframe: "Month 6+",
-    title: "10x",
-    description:
-      "You're doing the work of a team twice your size. Growth is no longer bottlenecked by operations.",
+      "With a shared language and framework, set goals you both care about and build the financial life you've always wanted — together.",
   },
 ]
 
@@ -31,11 +31,10 @@ export function Transformation() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Your path to 10x
+            How it works
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Real results compound over time. Here&apos;s the journey our
-            customers take.
+            From strangers about money to true financial partners — here&apos;s the journey.
           </p>
         </div>
         <div className="relative mt-12">
@@ -56,13 +55,9 @@ export function Transformation() {
                     i % 2 === 0 ? "sm:pr-12 sm:text-right" : "sm:pl-12"
                   }`}
                 >
-                  <span className="text-sm font-medium text-primary">
-                    {stage.timeframe}
-                  </span>
+                  <span className="text-sm font-medium text-primary">{stage.timeframe}</span>
                   <h3 className="mt-1 text-xl font-semibold">{stage.title}</h3>
-                  <p className="mt-2 text-muted-foreground">
-                    {stage.description}
-                  </p>
+                  <p className="mt-2 text-muted-foreground">{stage.description}</p>
                 </div>
               </div>
             ))}

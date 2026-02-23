@@ -3,25 +3,25 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 const testimonials = [
   {
-    name: "Sarah Chen",
-    role: "VP of Operations, ScaleUp Inc.",
-    initials: "SC",
+    name: "Jordan & Alex M.",
+    role: "Together 7 years",
+    initials: "JA",
     quote:
-      "We cut our manual reporting time by 85%. Our team now spends that time on strategy instead of spreadsheets. Revenue is up 32% since we started.",
+      "We'd been arguing about money for years without ever understanding why. Seeing our profiles side-by-side was a lightbulb moment. We finally have language for our differences.",
   },
   {
-    name: "Marcus Rodriguez",
-    role: "Founder, Velocity Labs",
-    initials: "MR",
+    name: "Priya & Dev S.",
+    role: "Married 3 years",
+    initials: "PD",
     quote:
-      "As a solo founder, Stryvv felt like hiring three employees. I went from struggling to keep up to confidently managing twice the workload.",
+      "I'm an Optimizer, Dev is a Dreamer. Stryvv helped us see how those styles actually complement each other when we're aligned on goals. Game changer for our budget conversations.",
   },
   {
-    name: "Emily Park",
-    role: "Head of Growth, Nextera",
-    initials: "EP",
+    name: "Taylor & Sam R.",
+    role: "Together 12 years",
+    initials: "TS",
     quote:
-      "The automation engine alone saved us $4,200/month in operational costs. Setup took 20 minutes. ROI was positive in the first week.",
+      "We thought we were just 'bad at money talks.' Turns out we just needed a framework. The conversation starters alone were worth it — we've had more productive money talks this month than in years.",
   },
 ]
 
@@ -31,11 +31,10 @@ export function Proof() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Trusted by high-performers
+            Couples who get it
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            See what our customers are saying about the results they&apos;re
-            getting.
+            Real couples discovering how to finally talk about money without it turning into a fight.
           </p>
         </div>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

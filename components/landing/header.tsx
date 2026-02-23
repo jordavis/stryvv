@@ -69,6 +69,12 @@ export function Header({ user }: HeaderProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
+                  <Link href="/onboarding" className="cursor-pointer">
+                    <UserIcon className="mr-2 size-4" />
+                    Dashboard
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href="/logout" className="cursor-pointer">
                     <LogOut className="mr-2 size-4" />
                     Sign out
@@ -77,9 +83,14 @@ export function Header({ user }: HeaderProps) {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild>
-              <Link href="/login">Login</Link>
-            </Button>
+            <>
+              <Button variant="ghost" asChild className="text-white/70 hover:text-white hover:bg-white/10">
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/survey">Take the survey</Link>
+              </Button>
+            </>
           )}
         </div>
 
@@ -111,24 +122,34 @@ export function Header({ user }: HeaderProps) {
                 ))}
                 <div className="mt-4 border-t pt-4">
                   {user ? (
-                    <Link
-                      href="/logout"
-                      onClick={() => setOpen(false)}
-                      className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
-                    >
-                      <LogOut className="size-4" />
-                      Sign out
-                    </Link>
+                    <div className="flex flex-col gap-2">
+                      <Link
+                        href="/onboarding"
+                        onClick={() => setOpen(false)}
+                        className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+                      >
+                        <UserIcon className="size-4" />
+                        Dashboard
+                      </Link>
+                      <Link
+                        href="/logout"
+                        onClick={() => setOpen(false)}
+                        className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+                      >
+                        <LogOut className="size-4" />
+                        Sign out
+                      </Link>
+                    </div>
                   ) : (
                     <div className="flex flex-col gap-2">
                       <Button asChild>
-                        <Link href="/login" onClick={() => setOpen(false)}>
-                          Login
+                        <Link href="/survey" onClick={() => setOpen(false)}>
+                          Take the survey
                         </Link>
                       </Button>
                       <Button variant="outline" asChild>
-                        <Link href="/signup" onClick={() => setOpen(false)}>
-                          Sign up
+                        <Link href="/login" onClick={() => setOpen(false)}>
+                          Login
                         </Link>
                       </Button>
                     </div>

@@ -10,7 +10,7 @@ export function Hero() {
           {/* Left column */}
           <div className="flex flex-col gap-6">
             <span className="w-fit rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-              Now in early access
+              Free Money Mindset Survey
             </span>
             <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
               Build your Rich Life.
@@ -23,8 +23,8 @@ export function Hero() {
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button size="lg" asChild>
-                <Link href="/signup">
-                  Get started free
+                <Link href="/survey">
+                  Take the free survey
                   <ArrowRight className="ml-1 size-4" />
                 </Link>
               </Button>
@@ -34,23 +34,57 @@ export function Hero() {
             </div>
             {/* Trust signals */}
             <div className="mt-4 flex items-center gap-6 text-sm text-muted-foreground">
-              <span>No credit card required</span>
+              <span>Free — no credit card</span>
               <span className="hidden sm:inline">&bull;</span>
-              <span className="hidden sm:inline">Free 14-day trial</span>
+              <span className="hidden sm:inline">Takes about 10 minutes</span>
               <span className="hidden sm:inline">&bull;</span>
-              <span className="hidden sm:inline">Cancel anytime</span>
+              <span className="hidden sm:inline">Results stay private</span>
             </div>
           </div>
 
-          {/* Right column — placeholder graphic */}
-          <div className="relative mx-auto aspect-square w-full max-w-md lg:mx-0">
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/20 via-primary/5 to-transparent" />
-            <div className="absolute inset-4 rounded-2xl border bg-card/50 backdrop-blur" />
-            <div className="absolute inset-8 flex items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-primary/5">
-              <div className="text-center">
-                <div className="text-6xl font-bold text-primary">10x</div>
-                <div className="mt-2 text-sm text-muted-foreground">
-                  Productivity boost
+          {/* Right column — snapshot preview */}
+          <div className="relative mx-auto w-full max-w-md lg:mx-0">
+            <div className="rounded-3xl bg-gradient-to-br from-primary/20 via-primary/5 to-transparent p-1">
+              <div className="rounded-2xl bg-card border p-6 space-y-4">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  Money Mindset Snapshot
+                </p>
+                <div className="flex gap-3">
+                  <div className="flex-1 rounded-xl bg-primary/10 p-4 space-y-2">
+                    <p className="text-xs text-muted-foreground font-medium">YOU</p>
+                    <p className="font-bold text-sm">The Optimizer</p>
+                    <div className="space-y-1.5">
+                      <div className="h-2 rounded-full bg-primary w-4/5" />
+                      <div className="h-2 rounded-full bg-primary/50 w-3/5" />
+                      <div className="h-2 rounded-full bg-primary/25 w-2/5" />
+                    </div>
+                  </div>
+                  <div className="flex-1 rounded-xl bg-orange-100 p-4 space-y-2">
+                    <p className="text-xs text-muted-foreground font-medium">PARTNER</p>
+                    <p className="font-bold text-sm">The Dreamer</p>
+                    <div className="space-y-1.5">
+                      <div className="h-2 rounded-full bg-orange-400 w-3/5" />
+                      <div className="h-2 rounded-full bg-orange-300 w-4/5" />
+                      <div className="h-2 rounded-full bg-orange-200 w-1/2" />
+                    </div>
+                  </div>
+                </div>
+                <div className="rounded-xl bg-muted/50 p-4 space-y-1.5">
+                  <p className="text-sm font-semibold">Where you align</p>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="h-1.5 w-1.5 rounded-full bg-green-500 shrink-0" />
+                      Goal setting & long-term planning
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="h-1.5 w-1.5 rounded-full bg-green-500 shrink-0" />
+                      Emergency fund priority
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />
+                      Day-to-day spending decisions
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

@@ -4,8 +4,9 @@ import Image from "next/image"
 const footerLinks = {
   Product: [
     { label: "Features", href: "#features" },
-    { label: "Pricing", href: "#pricing" },
+    { label: "How it works", href: "#features" },
     { label: "Testimonials", href: "#proof" },
+    { label: "Take the Survey", href: "/survey" },
   ],
   Company: [
     { label: "About", href: "#" },
@@ -29,8 +30,8 @@ export function Footer() {
               <Image src="/logo-green.png" alt="Stryvv" unoptimized width={120} height={29} />
             </Link>
             <p className="mt-3 text-sm text-muted-foreground">
-              The all-in-one platform for modern teams to achieve more with less
-              effort.
+              Helping couples understand their money mindsets and build their
+              rich life together.
             </p>
           </div>
           {/* Link groups */}

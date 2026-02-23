@@ -1,49 +1,49 @@
 import {
-  Zap,
+  Brain,
+  Heart,
+  MessageCircle,
+  Target,
   BarChart3,
   Users,
-  Shield,
-  Workflow,
-  Globe,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const features = [
   {
-    icon: Workflow,
-    title: "Workflow Automation",
+    icon: Brain,
+    title: "Money Mindset Profiles",
     description:
-      "Build automated workflows with a visual drag-and-drop editor. No code required.",
-  },
-  {
-    icon: BarChart3,
-    title: "Real-Time Analytics",
-    description:
-      "Live dashboards that update instantly. Track KPIs, spot trends, and make data-driven decisions.",
+      "Discover your financial personality — Optimizer, Dreamer, Worrier, or Avoider — and what it means for how you handle money.",
   },
   {
     icon: Users,
-    title: "Team Collaboration",
+    title: "Couples Comparison",
     description:
-      "Shared workspaces, real-time editing, and smart notifications that keep everyone in sync.",
+      "See your results side-by-side with your partner's. Understand where you naturally align and where your differences create friction.",
   },
   {
-    icon: Shield,
-    title: "Enterprise Security",
+    icon: MessageCircle,
+    title: "Conversation Starters",
     description:
-      "SOC 2 compliant with end-to-end encryption, SSO, and granular access controls.",
+      "Get personalized prompts designed to open up productive money conversations — not arguments. Start talking, not fighting.",
   },
   {
-    icon: Zap,
-    title: "Instant Integrations",
+    icon: Target,
+    title: "Shared Goals Framework",
     description:
-      "Connect 200+ tools in one click. Sync data across your entire stack effortlessly.",
+      "Map your financial priorities together. Identify what you both want and create a roadmap you're both excited to follow.",
   },
   {
-    icon: Globe,
-    title: "Global Scale",
+    icon: BarChart3,
+    title: "Financial Compatibility Score",
     description:
-      "Edge-deployed infrastructure with 99.99% uptime. Fast everywhere, for every team member.",
+      "A clear picture of how compatible your money styles are, and practical advice for the gaps.",
+  },
+  {
+    icon: Heart,
+    title: "Built for Couples",
+    description:
+      "Every feature is designed for two. Stryvv works when both partners are engaged — and gently nudges when they're not.",
   },
 ]
 
@@ -53,10 +53,10 @@ export function Features() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Built for modern teams
+            Everything you need to get financially aligned
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Powerful features that work together to multiply your output.
+            Stryvv gives couples the clarity, language, and tools to manage money as a team.
           </p>
         </div>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

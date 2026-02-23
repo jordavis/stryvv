@@ -1,10 +1,10 @@
 import { CheckCircle } from "lucide-react"
 
 const deliverables = [
-  "Automated workflow engine that saves 10+ hours per week",
-  "Real-time analytics dashboard with actionable insights",
-  "Team collaboration tools that keep everyone aligned",
-  "Priority support from our expert team",
+  "Your personal Money Mindset profile — know your financial personality",
+  "Side-by-side comparison with your partner's results",
+  "Compatibility insights across 6 financial dimensions",
+  "Personalized conversation starters to bridge your money differences",
 ]
 
 export function Success() {
@@ -16,7 +16,8 @@ export function Success() {
           Here&apos;s what you&apos;ll get
         </h2>
         <p className="mt-4 text-lg text-muted-foreground">
-          Everything you need to transform your workflow, delivered on day one.
+          Your Money Mindset Snapshot — a clear picture of how you and your partner relate to money,
+          and how to work better together.
         </p>
         <ul className="mt-8 space-y-4 text-left">
           {deliverables.map((item) => (

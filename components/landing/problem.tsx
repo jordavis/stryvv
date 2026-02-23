@@ -1,24 +1,24 @@
-import { AlertTriangle, Clock, TrendingDown } from "lucide-react"
+import { AlertTriangle, MessageSquareOff, TrendingDown } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const problems = [
   {
-    icon: Clock,
-    title: "Drowning in busywork",
+    icon: MessageSquareOff,
+    title: "You avoid money talks",
     description:
-      "You spend 60% of your day on repetitive tasks that don't move the needle. Context-switching kills your focus.",
+      "Conversations about money feel loaded — someone always ends up defensive, dismissed, or just done. So you stop having them.",
   },
   {
     icon: TrendingDown,
-    title: "Falling behind competitors",
+    title: "You're not on the same page",
     description:
-      "While you're manually crunching numbers, your competitors are automating and scaling. The gap widens every week.",
+      "One of you is a saver, one's a spender. One tracks every dollar, the other doesn't look at the account. Small differences compound into real friction.",
   },
   {
     icon: AlertTriangle,
-    title: "Tools that don't talk",
+    title: "You have goals but no system",
     description:
-      "Your tech stack is a patchwork of disconnected tools. Data lives in silos and nothing syncs properly.",
+      "You both want financial security — maybe even the same things. But without a shared framework, you drift instead of build.",
   },
 ]
 
@@ -27,11 +27,10 @@ export function Problem() {
     <section className="py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Sound familiar?
-          </h2>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Sound familiar?</h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            These problems cost teams thousands of hours and dollars every year.
+            Money is the #1 source of conflict in relationships. Not because couples are bad with
+            money — but because they&apos;ve never been given the tools to understand each other.
           </p>
         </div>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -48,8 +47,8 @@ export function Problem() {
           ))}
         </div>
         <p className="mx-auto mt-12 max-w-2xl text-center text-lg font-medium">
-          We built Stryvv because we lived this pain ourselves. There had to be
-          a better way — and now there is.
+          Stryvv helps couples understand their financial personalities — so they can stop fighting
+          about money and start building together.
         </p>
       </div>
     </section>

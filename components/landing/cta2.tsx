@@ -4,11 +4,11 @@ import { Avatar, AvatarFallback, AvatarGroup } from "@/components/ui/avatar"
 import { ArrowRight } from "lucide-react"
 
 const avatars = [
-  { initials: "SC", color: "bg-blue-100 text-blue-700" },
-  { initials: "MR", color: "bg-green-100 text-green-700" },
-  { initials: "EP", color: "bg-purple-100 text-purple-700" },
-  { initials: "JT", color: "bg-orange-100 text-orange-700" },
-  { initials: "AK", color: "bg-pink-100 text-pink-700" },
+  { initials: "JA", color: "bg-blue-100 text-blue-700" },
+  { initials: "PD", color: "bg-green-100 text-green-700" },
+  { initials: "TR", color: "bg-purple-100 text-purple-700" },
+  { initials: "MS", color: "bg-orange-100 text-orange-700" },
+  { initials: "CL", color: "bg-pink-100 text-pink-700" },
 ]
 
 export function CTA2() {
@@ -23,15 +23,15 @@ export function CTA2() {
           ))}
         </AvatarGroup>
         <h2 className="mt-8 text-3xl font-bold tracking-tight sm:text-4xl">
-          Ready to 10x your output?
+          Ready to understand each other better?
         </h2>
         <p className="mt-4 text-lg text-muted-foreground">
-          Join thousands of high-performers who&apos;ve transformed how they
-          work. Start your free trial today — no credit card required.
+          Join couples who&apos;ve already taken the survey. It&apos;s free, takes 10 minutes, and
+          might just change how you talk about money forever.
         </p>
         <Button size="lg" className="mt-8" asChild>
-          <Link href="/signup">
-            Yes, let&apos;s go
+          <Link href="/survey">
+            Take the free survey
             <ArrowRight className="ml-1 size-4" />
           </Link>
         </Button>
