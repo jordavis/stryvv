@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useSurvey } from "@/lib/context/survey-context"
 import { step3Schema, type Step3Data } from "@/lib/validations/survey"
+import { QUESTION_BY_KEY } from "@/lib/constants/survey-questions"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { ShapeRanker } from "./ShapeRanker"
@@ -62,7 +63,7 @@ export function Step3Form() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
       {/* Save vs YOLO */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">When it comes to spending, which are you?</Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q11_save_vs_yolo}</Label>
         <div className="rounded-xl overflow-hidden border border-border mb-3">
           <Image
             src="/images/survey/save-vs-yolo.png"
@@ -102,7 +103,7 @@ export function Step3Form() {
 
       {/* My money style */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">My money personality is…</Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q12_my_money_style}</Label>
         <RadioGroup
           value={myStyle}
           onValueChange={(v) =>
@@ -136,7 +137,7 @@ export function Step3Form() {
 
       {/* Partner money style */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">My partner's money personality is…</Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q13_partner_money_style}</Label>
         <RadioGroup
           value={partnerStyle}
           onValueChange={(v) =>
@@ -170,9 +171,7 @@ export function Step3Form() {
 
       {/* Shape ranking */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">
-          Rank these shapes from most to least like your personality
-        </Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q14_shape_ranking}</Label>
         <Controller
           name="q14_shape_ranking"
           control={control}
@@ -187,7 +186,7 @@ export function Step3Form() {
 
       {/* Learning style */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">How do you best learn new information?</Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q15_learning_style}</Label>
         <RadioGroup
           value={learningStyle}
           onValueChange={(v) =>

@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useSurvey } from "@/lib/context/survey-context"
 import { step1Schema, type Step1Data } from "@/lib/validations/survey"
+import { QUESTION_BY_KEY } from "@/lib/constants/survey-questions"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -51,7 +52,7 @@ export function Step1Form() {
       {/* Nickname */}
       <div className="space-y-2">
         <Label htmlFor="nickname" className="text-base font-semibold">
-          What should we call you?
+          {QUESTION_BY_KEY.q5_nickname}
         </Label>
         <Input
           id="nickname"
@@ -66,7 +67,7 @@ export function Step1Form() {
 
       {/* Partner type */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">My partner is my…</Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q6_partner_type}</Label>
         <RadioGroup
           value={partnerType}
           onValueChange={(v) =>
@@ -97,7 +98,7 @@ export function Step1Form() {
 
       {/* Relationship duration */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">How long have you been together?</Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q7_relationship_duration}</Label>
         <RadioGroup
           value={duration}
           onValueChange={(v) =>

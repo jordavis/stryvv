@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { saveSurveyResponse } from "@/lib/actions/survey"
 import { createHousehold, joinHousehold } from "@/lib/actions/onboarding"
+import { sendSurveyAnalysis } from "@/lib/actions/survey-analysis"
 import { InvitePanel } from "./InvitePanel"
 import { ConnectedPanel } from "./ConnectedPanel"
 
@@ -16,6 +17,7 @@ type Mode = "creator" | "joiner"
 
 export function OnboardingClient({ firstName }: OnboardingClientProps) {
   const [inviteCode, setInviteCode] = useState<string | null>(null)
+  const [householdId, setHouseholdId] = useState<string | null>(null)
   const [mode, setMode] = useState<Mode>("creator")
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -35,8 +37,13 @@ export function OnboardingClient({ firstName }: OnboardingClientProps) {
 
         if (storedInviteCode) {
           // Person 2: join an existing household
-          await joinHousehold(storedInviteCode)
+          const { householdId: joinedHouseholdId } = await joinHousehold(storedInviteCode)
+          setHouseholdId(joinedHouseholdId)
           setMode("joiner")
+          // Fire webhook without blocking UI
+          sendSurveyAnalysis(joinedHouseholdId).catch((err) =>
+            console.error("Survey analysis webhook failed:", err)
+          )
         } else {
           // Person 1: create a new household
           const result = await createHousehold()
@@ -78,7 +85,7 @@ export function OnboardingClient({ firstName }: OnboardingClientProps) {
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-2xl px-4 py-12">
         {mode === "joiner" ? (
-          <ConnectedPanel firstName={firstName} />
+          <ConnectedPanel firstName={firstName} householdId={householdId ?? ""} />
         ) : (
           <InvitePanel firstName={firstName} inviteCode={inviteCode ?? ""} />
         )}
