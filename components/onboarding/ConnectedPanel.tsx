@@ -1,13 +1,33 @@
+"use client"
+
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { CheckCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { sendSurveyAnalysis } from "@/lib/actions/survey-analysis"
 
 interface ConnectedPanelProps {
   firstName: string
+  householdId: string
 }
 
-export function ConnectedPanel({ firstName }: ConnectedPanelProps) {
+export function ConnectedPanel({ firstName, householdId }: ConnectedPanelProps) {
+  const [resendState, setResendState] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [resendError, setResendError] = useState<string | null>(null)
+
+  async function handleResend() {
+    setResendState("loading")
+    setResendError(null)
+    const result = await sendSurveyAnalysis(householdId)
+    if (result.success) {
+      setResendState("success")
+    } else {
+      setResendState("error")
+      setResendError(result.error ?? "Failed to send analysis")
+    }
+  }
+
   return (
     <div className="space-y-8 text-center">
       <Image src="/logo.png" alt="Stryvv" width={120} height={29} unoptimized className="mx-auto" />
@@ -45,6 +65,24 @@ export function ConnectedPanel({ firstName }: ConnectedPanelProps) {
       <Button asChild size="lg" className="w-full">
         <Link href="/">Back to home</Link>
       </Button>
+
+      <div className="space-y-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleResend}
+          disabled={resendState === "loading"}
+          className="w-full"
+        >
+          {resendState === "loading" ? "Sending analysis…" : "Resend Analysis"}
+        </Button>
+        {resendState === "success" && (
+          <p className="text-sm text-green-600">Analysis sent successfully.</p>
+        )}
+        {resendState === "error" && (
+          <p className="text-sm text-destructive">{resendError}</p>
+        )}
+      </div>
     </div>
   )
 }

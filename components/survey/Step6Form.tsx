@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useSurvey } from "@/lib/context/survey-context"
 import { step6Schema, type Step6Data } from "@/lib/validations/survey"
+import { QUESTION_BY_KEY } from "@/lib/constants/survey-questions"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -63,9 +64,7 @@ export function Step6Form() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* Reflection feeling */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">
-          Reflecting on your financial life together, how do you feel?
-        </Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q_reflection_feeling}</Label>
         <RadioGroup
           value={reflection}
           onValueChange={(v) =>
@@ -100,7 +99,7 @@ export function Step6Form() {
       {/* Discuss with partner */}
       <div className="space-y-2">
         <Label htmlFor="discuss" className="text-base font-semibold">
-          What's one thing you'd most like to discuss with your partner?
+          {QUESTION_BY_KEY.q_discuss_with_partner}
         </Label>
         <Textarea
           id="discuss"
@@ -117,7 +116,7 @@ export function Step6Form() {
       {/* Missed question (optional) */}
       <div className="space-y-2">
         <Label htmlFor="missed" className="text-base font-semibold">
-          Anything we should have asked but didn&apos;t?{" "}
+          {QUESTION_BY_KEY.q_missed_question}{" "}
           <span className="text-muted-foreground font-normal">(optional)</span>
         </Label>
         <Textarea

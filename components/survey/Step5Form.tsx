@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useSurvey } from "@/lib/context/survey-context"
 import { step5Schema, type Step5Data } from "@/lib/validations/survey"
+import { QUESTION_BY_KEY } from "@/lib/constants/survey-questions"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -73,7 +74,7 @@ export function Step5Form() {
       {/* Favorite treat */}
       <div className="space-y-2">
         <Label htmlFor="treat" className="text-base font-semibold">
-          What's your favorite little treat or splurge?
+          {QUESTION_BY_KEY.q18_favorite_treat}
         </Label>
         <p className="text-sm text-muted-foreground">Something you buy just for the joy of it.</p>
         <Input
@@ -90,7 +91,7 @@ export function Step5Form() {
       {/* Joy spending moment */}
       <div className="space-y-2">
         <Label htmlFor="joy" className="text-base font-semibold">
-          Describe a time spending money brought you real joy
+          {QUESTION_BY_KEY.q19_joy_spending_moment}
         </Label>
         <Textarea
           id="joy"
@@ -106,9 +107,7 @@ export function Step5Form() {
 
       {/* Discussion frequency */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">
-          How often do you talk about money with your partner?
-        </Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q20_discussion_frequency}</Label>
         <RadioGroup
           value={frequency}
           onValueChange={(v) =>
@@ -141,7 +140,7 @@ export function Step5Form() {
 
       {/* Conversation feeling */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">How do money conversations usually feel?</Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q21_conversation_feeling}</Label>
         <RadioGroup
           value={feeling}
           onValueChange={(v) =>
@@ -176,7 +175,7 @@ export function Step5Form() {
       {/* Biggest challenge */}
       <div className="space-y-2">
         <Label htmlFor="challenge" className="text-base font-semibold">
-          What's your biggest financial challenge as a couple?
+          {QUESTION_BY_KEY.q22_biggest_challenge}
         </Label>
         <Textarea
           id="challenge"
@@ -193,7 +192,7 @@ export function Step5Form() {
       {/* Biggest win */}
       <div className="space-y-2">
         <Label htmlFor="win" className="text-base font-semibold">
-          What's your biggest financial win as a couple?
+          {QUESTION_BY_KEY.q23_biggest_win}
         </Label>
         <Textarea
           id="win"

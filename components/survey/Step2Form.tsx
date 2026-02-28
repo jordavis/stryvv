@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useSurvey } from "@/lib/context/survey-context"
 import { step2Schema, type Step2Data } from "@/lib/validations/survey"
+import { QUESTION_BY_KEY } from "@/lib/constants/survey-questions"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { StepNavigation } from "./StepNavigation"
@@ -62,7 +63,7 @@ export function Step2Form() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* Finance structure */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">How do you handle money as a couple?</Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q8_finance_structure}</Label>
         <RadioGroup
           value={structure}
           onValueChange={(v) =>
@@ -96,7 +97,7 @@ export function Step2Form() {
 
       {/* Finance manager */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">Who manages the day-to-day finances?</Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q9_finance_manager}</Label>
         <RadioGroup
           value={manager}
           onValueChange={(v) =>
@@ -129,9 +130,7 @@ export function Step2Form() {
 
       {/* Satisfaction rating */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">
-          How satisfied are you with how you manage money together?
-        </Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q10_satisfaction}</Label>
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map((n) => (
             <button

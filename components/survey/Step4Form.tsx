@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useSurvey } from "@/lib/context/survey-context"
 import { step4Schema, type Step4Data } from "@/lib/validations/survey"
+import { QUESTION_BY_KEY } from "@/lib/constants/survey-questions"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { StepNavigation } from "./StepNavigation"
@@ -72,9 +73,7 @@ export function Step4Form() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* Goal alignment */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">
-          How aligned are you and your partner on financial goals?
-        </Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q16_goal_alignment}</Label>
         <RadioGroup
           value={alignment}
           onValueChange={(v) =>
@@ -108,9 +107,7 @@ export function Step4Form() {
 
       {/* Financial priority */}
       <div className="space-y-3">
-        <Label className="text-base font-semibold">
-          What's your biggest financial priority right now?
-        </Label>
+        <Label className="text-base font-semibold">{QUESTION_BY_KEY.q17_financial_priority}</Label>
         <RadioGroup
           value={priority}
           onValueChange={(v) =>
