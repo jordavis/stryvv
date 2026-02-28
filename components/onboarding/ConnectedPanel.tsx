@@ -39,8 +39,8 @@ export function ConnectedPanel({ firstName, householdId }: ConnectedPanelProps) 
           You&apos;re connected{firstName ? `, ${firstName}` : ""}!
         </h1>
         <p className="text-muted-foreground max-w-md mx-auto">
-          Your responses are saved and your households are linked. Your full Money Mindset Snapshot
-          will be ready once both partners have completed the survey.
+          Both surveys are in — we&apos;re generating your Couples Alignment Snapshot now. Expect
+          an email soon with your personalized results.
         </p>
       </div>
 
@@ -49,16 +49,18 @@ export function ConnectedPanel({ firstName, householdId }: ConnectedPanelProps) 
         <ul className="space-y-3 text-sm text-muted-foreground">
           <li className="flex gap-3">
             <span className="text-primary font-bold shrink-0">1.</span>
-            Both your results are now linked — your Money Mindset Snapshot is being prepared.
+            We&apos;re analyzing both of your responses and generating your Couples Alignment
+            Snapshot.
           </li>
           <li className="flex gap-3">
             <span className="text-primary font-bold shrink-0">2.</span>
-            You&apos;ll see a side-by-side comparison of your financial personalities, compatibility
-            insights, and personalized conversation starters.
+            You&apos;ll receive a side-by-side comparison of your financial personalities,
+            compatibility score, and personalized conversation starters.
           </li>
           <li className="flex gap-3">
             <span className="text-primary font-bold shrink-0">3.</span>
-            Stryvv will guide you both toward shared financial goals.
+            Stryvv will guide you both toward shared financial goals and your version of a rich life
+            together.
           </li>
         </ul>
       </div>

@@ -98,22 +98,43 @@ export default function SurveyCompletePage() {
       <SampleComparisonCard />
 
       {/* CTA */}
-      <div className="rounded-2xl bg-primary/5 border border-primary/20 p-6 space-y-4 text-center">
-        <h2 className="text-xl font-bold">Ready to see the full picture?</h2>
-        <p className="text-sm text-muted-foreground">
-          Create your account to save your results and invite your partner. When they complete the
-          survey, you'll both unlock your combined Money Mindset Snapshot.
-        </p>
-        <Button asChild size="lg" className="w-full">
-          <Link href="/signup">Create my account — it&apos;s free</Link>
-        </Button>
-        <p className="text-xs text-muted-foreground">
-          Already have an account?{" "}
-          <Link href="/login" className="text-primary hover:underline">
-            Sign in
-          </Link>
-        </p>
-      </div>
+      {state.inviteCode ? (
+        <div className="rounded-2xl bg-primary/5 border border-primary/20 p-6 space-y-4 text-center">
+          <div className="text-4xl">🎉</div>
+          <h2 className="text-xl font-bold">You&apos;re almost there!</h2>
+          <p className="text-sm text-muted-foreground">
+            Your partner has already completed their survey. Create your free account and we&apos;ll
+            generate your Couples Alignment Snapshot — a side-by-side look at your money
+            personalities, where you align, and how to build your rich life together.
+          </p>
+          <Button asChild size="lg" className="w-full">
+            <Link href="/signup">Create my account &amp; unlock our snapshot</Link>
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            Already have an account?{" "}
+            <Link href="/login" className="text-primary hover:underline">
+              Sign in
+            </Link>
+          </p>
+        </div>
+      ) : (
+        <div className="rounded-2xl bg-primary/5 border border-primary/20 p-6 space-y-4 text-center">
+          <h2 className="text-xl font-bold">Ready to see the full picture?</h2>
+          <p className="text-sm text-muted-foreground">
+            Create your account to save your results and invite your partner. When they complete the
+            survey, you&apos;ll both unlock your combined Money Mindset Snapshot.
+          </p>
+          <Button asChild size="lg" className="w-full">
+            <Link href="/signup">Create my account — it&apos;s free</Link>
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            Already have an account?{" "}
+            <Link href="/login" className="text-primary hover:underline">
+              Sign in
+            </Link>
+          </p>
+        </div>
+      )}
     </div>
   )
 }
