@@ -22,6 +22,7 @@ export function ConnectedPanel({ firstName, householdId }: ConnectedPanelProps) 
     const result = await sendSurveyAnalysis(householdId)
     if (result.success) {
       setResendState("success")
+      setTimeout(() => setResendState("idle"), 3000)
     } else {
       setResendState("error")
       setResendError(result.error ?? "Failed to send analysis")
