@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Stryvv — Achieve More With Less Effort",
+  title: "Stryvv — Build Your Rich Life Together",
   description:
-    "The all-in-one platform that helps you streamline your workflow, automate repetitive tasks, and focus on what truly matters.",
+    "Find alignment with your partner by moving from reactive spending to intentional, value driven choices that support your version of a rich life together.",
 };
 
 export default function RootLayout({
