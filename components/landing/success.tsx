@@ -16,10 +16,6 @@ export function Success() {
         <h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">
           Here&apos;s what you&apos;ll get
         </h2>
-        <p className="mt-4 text-lg text-muted-foreground">
-          Most couples do not want to obsess over money. Stryvv helps you manage your money so it
-          does not manage you.
-        </p>
         <ul className="mt-8 space-y-4 text-left">
           {deliverables.map((item) => (
             <li key={item} className="flex items-start gap-3">
@@ -28,6 +24,10 @@ export function Success() {
             </li>
           ))}
         </ul>
+        <p className="mt-8 text-lg text-muted-foreground">
+          Most couples do not want to obsess over money. Stryvv helps you manage your money so it
+          does not manage you.
+        </p>
       </div>
     </section>
   )
