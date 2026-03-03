@@ -88,7 +88,7 @@ export function Header({ user }: HeaderProps) {
                 <Link href="/login">Login</Link>
               </Button>
               <Button asChild>
-                <Link href="/survey">Take the survey</Link>
+                <Link href="/survey">Start stryvving</Link>
               </Button>
             </>
           )}
@@ -144,7 +144,7 @@ export function Header({ user }: HeaderProps) {
                     <div className="flex flex-col gap-2">
                       <Button asChild>
                         <Link href="/survey" onClick={() => setOpen(false)}>
-                          Take the survey
+                          Start stryvving
                         </Link>
                       </Button>
                       <Button variant="outline" asChild>

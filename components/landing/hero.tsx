@@ -24,7 +24,7 @@ export function Hero() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button size="lg" asChild>
                 <Link href="/survey">
-                  Take the free survey
+                  Get started for free
                   <ArrowRight className="ml-1 size-4" />
                 </Link>
               </Button>
