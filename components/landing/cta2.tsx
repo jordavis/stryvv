@@ -31,7 +31,7 @@ export function CTA2() {
         </p>
         <Button size="lg" className="mt-8" asChild>
           <Link href="/survey">
-            Take the free survey
+            Unlock your rich life, together
             <ArrowRight className="ml-1 size-4" />
           </Link>
         </Button>
