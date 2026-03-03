@@ -10,7 +10,7 @@ export function Hero() {
           {/* Left column */}
           <div className="flex flex-col gap-6">
             <span className="w-fit rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-              Free Money Mindset Survey
+              Love &amp; Money, Finally in Sync
             </span>
             <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
               Build your Rich Life.
