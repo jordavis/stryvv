@@ -3,6 +3,21 @@
 import { createClient } from "@/lib/supabase/server"
 import { nanoid } from "nanoid"
 
+/** Ensure a profile row exists for the current user. Silently no-ops if it already does. */
+async function ensureProfile(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  user: { id: string; user_metadata: Record<string, string> }
+) {
+  await supabase.from("profiles").upsert(
+    {
+      id: user.id,
+      first_name: user.user_metadata?.first_name ?? "",
+      last_name: user.user_metadata?.last_name ?? "",
+    },
+    { onConflict: "id", ignoreDuplicates: true }
+  )
+}
+
 export async function createHousehold() {
   const supabase = await createClient()
   const {
@@ -10,7 +25,9 @@ export async function createHousehold() {
   } = await supabase.auth.getUser()
   if (!user) throw new Error("Not authenticated")
 
-  // If already in a household, return existing invite code
+  await ensureProfile(supabase, user)
+
+  // If the profile is already linked to a household, return that invite code
   const { data: profile } = await supabase
     .from("profiles")
     .select("household_id")
@@ -24,6 +41,28 @@ export async function createHousehold() {
       .eq("id", profile.household_id)
       .single()
     return { inviteCode: household?.invite_code ?? "" }
+  }
+
+  // Guard against React Strict Mode double-invocation: if this user already
+  // created a household (created_by), return it instead of creating a second one.
+  const { data: existing } = await supabase
+    .from("households")
+    .select("id, invite_code")
+    .eq("created_by", user.id)
+    .limit(1)
+    .single()
+
+  if (existing) {
+    // Link profile to the already-created household
+    await supabase
+      .from("profiles")
+      .update({ household_id: existing.id })
+      .eq("id", user.id)
+    await supabase
+      .from("survey_responses")
+      .update({ household_id: existing.id })
+      .eq("user_id", user.id)
+    return { inviteCode: existing.invite_code }
   }
 
   // Create new household
@@ -58,6 +97,8 @@ export async function joinHousehold(inviteCode: string) {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) throw new Error("Not authenticated")
+
+  await ensureProfile(supabase, user)
 
   // Find the household
   const { data: household, error: hError } = await supabase

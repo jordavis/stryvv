@@ -26,11 +26,14 @@ export async function GET(request: Request) {
         if (!existing) {
           // Create profile from name set during signup
           const meta = user.user_metadata
-          await supabase.from("profiles").insert({
+          const { error: profileError } = await supabase.from("profiles").insert({
             id: user.id,
             first_name: meta?.first_name ?? "",
             last_name: meta?.last_name ?? "",
           })
+          if (profileError) {
+            console.error("[auth/callback] profile insert failed:", profileError)
+          }
         }
 
         return NextResponse.redirect(`${origin}${next}`)
