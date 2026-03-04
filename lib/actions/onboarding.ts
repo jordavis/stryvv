@@ -30,7 +30,7 @@ export async function createHousehold() {
   const inviteCode = nanoid(6).toUpperCase()
   const { data: household, error: hError } = await supabase
     .from("households")
-    .insert({ invite_code: inviteCode })
+    .insert({ invite_code: inviteCode, created_by: user.id })
     .select()
     .single()
 
@@ -76,25 +76,14 @@ export async function joinHousehold(inviteCode: string) {
 
   if (pError) throw pError
 
-  // Link Person 2's survey response to the household
+  // Link Person 2's survey response to the household.
+  // Person 1's survey_response is already linked in createHousehold() under their
+  // own session. Attempting to update it here would be silently blocked by RLS
+  // (this user can only update rows where user_id = auth.uid()).
   await supabase
     .from("survey_responses")
     .update({ household_id: household.id })
     .eq("user_id", user.id)
-
-  // Also ensure Person 1's survey response is linked (it may already be, but be safe)
-  const { data: householdMembers } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("household_id", household.id)
-
-  if (householdMembers && householdMembers.length > 0) {
-    const memberIds = householdMembers.map((p) => p.id)
-    await supabase
-      .from("survey_responses")
-      .update({ household_id: household.id })
-      .in("user_id", memberIds)
-  }
 
   return { householdId: household.id }
 }

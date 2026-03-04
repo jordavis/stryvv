@@ -25,37 +25,51 @@ export async function sendSurveyAnalysis(
   try {
     const supabase = await createClient()
 
-    // Fetch profiles in the household ordered by created_at ASC
-    // First profile = partner1 (creator), second = partner2 (joiner)
+    // Fetch the household to get the creator (partner1)
+    const { data: household, error: householdError } = await supabase
+      .from("households")
+      .select("id, created_by")
+      .eq("id", householdId)
+      .single()
+
+    if (householdError) throw new Error(householdError.message)
+    if (!household?.created_by) {
+      throw new Error("Household creator not found")
+    }
+
+    // Fetch profiles in the household — the creator is partner1, the other is partner2
     const { data: profiles, error: profilesError } = await supabase
       .from("profiles")
-      .select("id, created_at")
+      .select("id")
       .eq("household_id", householdId)
-      .order("created_at", { ascending: true })
 
     if (profilesError) throw new Error(profilesError.message)
     if (!profiles || profiles.length < 2) {
       throw new Error("Both partners must be in the household before sending analysis")
     }
 
-    const [partner1Profile, partner2Profile] = profiles
+    const partner1Id = household.created_by
+    const partner2Id = profiles.find((p) => p.id !== partner1Id)?.id
+    if (!partner2Id) {
+      throw new Error("Could not identify both partners")
+    }
 
     // Fetch survey responses for both partners
     const { data: responses, error: responsesError } = await supabase
       .from("survey_responses")
       .select("*")
       .eq("household_id", householdId)
-      .in("user_id", [partner1Profile.id, partner2Profile.id])
+      .in("user_id", [partner1Id, partner2Id])
 
     if (responsesError) throw new Error(responsesError.message)
     if (!responses || responses.length < 2) {
       throw new Error("Both partners must complete the survey before sending analysis")
     }
 
-    const partner1Response = responses.find((r) => r.user_id === partner1Profile.id) as
+    const partner1Response = responses.find((r) => r.user_id === partner1Id) as
       | (SurveyAnswers & { user_id: string })
       | undefined
-    const partner2Response = responses.find((r) => r.user_id === partner2Profile.id) as
+    const partner2Response = responses.find((r) => r.user_id === partner2Id) as
       | (SurveyAnswers & { user_id: string })
       | undefined
 
