@@ -26,7 +26,7 @@ export function InvitePanel({ firstName, inviteCode }: InvitePanelProps) {
 
   return (
     <div className="space-y-8 text-center">
-      <Image src="/logo.png" alt="Stryvv" width={120} height={29} unoptimized className="mx-auto" />
+      <Image src="/logo-green.png" alt="Stryvv" width={120} height={29} unoptimized className="mx-auto" />
 
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">You&apos;re all set{firstName ? `, ${firstName}` : ""}!</h1>

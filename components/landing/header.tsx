@@ -98,7 +98,7 @@ export function Header({ user }: HeaderProps) {
         <div className="md:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="text-white hover:text-white hover:bg-white/10">
                 <Menu className="size-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>

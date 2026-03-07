@@ -22,7 +22,6 @@ export default function SignupPage() {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -37,12 +36,11 @@ export default function SignupPage() {
     }
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { first_name: firstName, last_name: lastName },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     })
 
@@ -52,29 +50,15 @@ export default function SignupPage() {
       return
     }
 
-    setSuccess(true)
-    setLoading(false)
-  }
+    if (data.user) {
+      await supabase.from("profiles").upsert({
+        id: data.user.id,
+        first_name: firstName,
+        last_name: lastName,
+      })
+    }
 
-  if (success) {
-    return (
-      <div className="flex min-h-screen items-center justify-center px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Check your email</CardTitle>
-            <CardDescription>
-              We&apos;ve sent you a confirmation link. Please check your email to
-              verify your account.
-            </CardDescription>
-          </CardHeader>
-          <CardFooter className="justify-center">
-            <Link href="/login">
-              <Button variant="outline">Back to login</Button>
-            </Link>
-          </CardFooter>
-        </Card>
-      </div>
-    )
+    window.location.href = "/onboarding"
   }
 
   return (
@@ -151,11 +135,11 @@ export default function SignupPage() {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
+          <CardFooter className="flex flex-col gap-4 pt-6">
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Creating account..." : "Create account"}
             </Button>
-            <span className="text-center text-sm text-muted-foreground">
+            <span className="text-center text-sm text-muted-foreground pt-2">
               Already have an account?{" "}
               <Link href="/login" className="text-foreground hover:underline">
                 Sign in
