@@ -62,7 +62,7 @@ export function Value() {
             <Check className="size-4 text-primary" />
             <span>No credit card required</span>
             <span>&bull;</span>
-            <span>Takes 10 minutes</span>
+            <span>Takes 5 minutes</span>
             <span>&bull;</span>
             <span>Both partners included</span>
           </div>

@@ -36,7 +36,7 @@ export function Hero() {
             <div className="mt-4 flex items-center gap-6 text-sm text-muted-foreground">
               <span>Free — no credit card</span>
               <span className="hidden sm:inline">&bull;</span>
-              <span className="hidden sm:inline">Takes about 10 minutes</span>
+              <span className="hidden sm:inline">Takes about 5 minutes</span>
               <span className="hidden sm:inline">&bull;</span>
               <span className="hidden sm:inline">Results stay private</span>
             </div>

@@ -26,7 +26,7 @@ export function CTA2() {
           Ready to understand each other better?
         </h2>
         <p className="mt-4 text-lg text-muted-foreground">
-          Join couples who&apos;ve already taken the survey. It&apos;s free, takes 10 minutes, and
+          Join couples who&apos;ve already taken the survey. It&apos;s free, takes 5 minutes, and
           might just change how you talk about money forever.
         </p>
         <Button size="lg" className="mt-8" asChild>
