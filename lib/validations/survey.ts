@@ -15,6 +15,7 @@ const financialPriority = z.enum([
   "save_for_family",
   "travel_experiences",
   "financial_freedom",
+  "other",
 ])
 const discussionFrequency = z.enum(["weekly", "monthly", "occasionally", "rarely", "almost_never"])
 const conversationFeeling = z.enum([
@@ -53,7 +54,7 @@ export const step3Schema = z.object({
   q11_save_vs_yolo: z.string().min(1, "Please share your thoughts"),
   q12_my_money_style: moneyStyle,
   q13_partner_money_style: moneyStyle,
-  q14_shape_ranking: z.array(shapeId).length(4, "Please rank all 4 shapes"),
+  q14_shape_ranking: z.array(shapeId).min(2, "Please select your top 2 shapes").max(2),
   q15_learning_style: learningStyle,
 })
 export type Step3Data = z.infer<typeof step3Schema>
@@ -61,11 +62,14 @@ export type Step3Data = z.infer<typeof step3Schema>
 export const step4Schema = z.object({
   q16_goal_alignment: goalAlignment,
   q17_financial_priority: financialPriority,
-})
+  q17_other_priority: z.string().optional(),
+}).refine(
+  (data) => data.q17_financial_priority !== "other" || (data.q17_other_priority ?? "").trim().length > 0,
+  { message: "Please describe your priority", path: ["q17_other_priority"] }
+)
 export type Step4Data = z.infer<typeof step4Schema>
 
 export const step5Schema = z.object({
-  q18_favorite_treat: z.string().min(1, "Please enter something"),
   q19_joy_spending_moment: z.string().min(1, "Please share a moment"),
   q20_discussion_frequency: discussionFrequency,
   q21_conversation_feeling: conversationFeeling,
@@ -77,6 +81,5 @@ export type Step5Data = z.infer<typeof step5Schema>
 export const step6Schema = z.object({
   q_reflection_feeling: reflectionFeeling,
   q_discuss_with_partner: z.string().min(1, "Please share something"),
-  q_missed_question: z.string().optional(),
 })
 export type Step6Data = z.infer<typeof step6Schema>

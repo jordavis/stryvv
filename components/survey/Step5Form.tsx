@@ -6,7 +6,6 @@ import { useSurvey } from "@/lib/context/survey-context"
 import { step5Schema, type Step5Data } from "@/lib/validations/survey"
 import { QUESTION_BY_KEY } from "@/lib/constants/survey-questions"
 import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { StepNavigation } from "./StepNavigation"
@@ -21,26 +20,26 @@ const frequencyOptions = [
 ]
 
 const conversationFeelingOptions = [
-  { value: "easy_productive", label: "Easy & productive", desc: "We communicate well" },
+  { value: "easy_productive", label: "😊 Easy & actually kind of fun", desc: "We're a good team when money comes up" },
   {
     value: "somewhat_tense",
-    label: "Somewhat tense",
-    desc: "Some friction, but we manage",
+    label: "😬 A little awkward, but fine",
+    desc: "Some friction, but we get through it",
   },
   {
     value: "one_sided",
-    label: "One-sided",
-    desc: "One of us drives the conversation",
+    label: "🎤 More of a monologue than a dialogue",
+    desc: "One of us does most of the talking",
   },
   {
     value: "emotionally_charged",
-    label: "Emotionally charged",
-    desc: "Often leads to stress or arguments",
+    label: "🔥 Let's just say... it gets heated",
+    desc: "Money talks have a way of turning into something else",
   },
   {
     value: "we_avoid_them",
-    label: "We avoid them",
-    desc: "We don't really talk about money",
+    label: "🙈 What money conversations?",
+    desc: "We have a very strict don't-ask-don't-tell policy",
   },
 ]
 
@@ -55,7 +54,6 @@ export function Step5Form() {
   } = useForm<Step5Data>({
     resolver: zodResolver(step5Schema),
     defaultValues: {
-      q18_favorite_treat: state.answers.q18_favorite_treat ?? "",
       q19_joy_spending_moment: state.answers.q19_joy_spending_moment ?? "",
       q20_discussion_frequency: state.answers.q20_discussion_frequency,
       q21_conversation_feeling: state.answers.q21_conversation_feeling,
@@ -71,23 +69,6 @@ export function Step5Form() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-      {/* Favorite treat */}
-      <div className="space-y-2">
-        <Label htmlFor="treat" className="text-base font-semibold">
-          {QUESTION_BY_KEY.q18_favorite_treat}
-        </Label>
-        <p className="text-sm text-muted-foreground">Something you buy just for the joy of it.</p>
-        <Input
-          id="treat"
-          placeholder="e.g. good coffee, a new book, takeout"
-          {...register("q18_favorite_treat")}
-          className={errors.q18_favorite_treat ? "border-destructive" : ""}
-        />
-        {errors.q18_favorite_treat && (
-          <p className="text-sm text-destructive">{errors.q18_favorite_treat.message}</p>
-        )}
-      </div>
-
       {/* Joy spending moment */}
       <div className="space-y-2">
         <Label htmlFor="joy" className="text-base font-semibold">

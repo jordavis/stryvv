@@ -43,7 +43,7 @@ export const SURVEY_QUESTIONS: SurveyQuestion[] = [
   },
   {
     fieldKey: "q11_save_vs_yolo",
-    question: "When it comes to spending, which are you?",
+    question: "When \"save money\" and \"you only live once\" square off in your head, which one usually wins?",
     questionContextForAiAgent: "Core spending personality: saver, spender, or balanced.",
   },
   {
@@ -83,10 +83,10 @@ export const SURVEY_QUESTIONS: SurveyQuestion[] = [
       "Top financial priority. Compare with partner's to identify convergence or conflict.",
   },
   {
-    fieldKey: "q18_favorite_treat",
-    question: "What's your favorite little treat or splurge?",
+    fieldKey: "q17_other_priority",
+    question: "If other, what's your financial priority?",
     questionContextForAiAgent:
-      "Small personal indulgence. Reveals values around reward and spending guilt.",
+      "Free-text priority when user selected 'Other'. Captures priorities not listed.",
   },
   {
     fieldKey: "q19_joy_spending_moment",
@@ -129,12 +129,6 @@ export const SURVEY_QUESTIONS: SurveyQuestion[] = [
     question: "What's one thing you'd most like to discuss with your partner?",
     questionContextForAiAgent:
       "Top unresolved financial topic. High-priority input for coaching session planning.",
-  },
-  {
-    fieldKey: "q_missed_question",
-    question: "Anything we should have asked but didn't?",
-    questionContextForAiAgent:
-      "Open-ended catch-all. May surface blind spots not captured elsewhere.",
   },
 ]
 

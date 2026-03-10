@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "castari-deploy": {
+      "source": "castari/cli",
+      "sourceType": "github",
+      "computedHash": "55c558d9adb2625ddbecd41197c2dffde0aa8dc9ce1cac24d884519810db9592"
+    }
+  }
+}

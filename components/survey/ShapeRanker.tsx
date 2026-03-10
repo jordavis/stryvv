@@ -25,9 +25,9 @@ export function ShapeRanker({ value, onChange }: ShapeRankerProps) {
   const handleClick = (id: ShapeId) => {
     const idx = value.indexOf(id)
     if (idx !== -1) {
-      // Already ranked — remove it and everything after
+      // Already selected — remove it and everything after
       onChange(value.slice(0, idx))
-    } else if (value.length < 4) {
+    } else if (value.length < 2) {
       onChange([...value, id])
     }
   }
@@ -35,25 +35,29 @@ export function ShapeRanker({ value, onChange }: ShapeRankerProps) {
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">
-        Click each shape in order from most to least like you (1 = most like you). Click again to deselect.
+        Pick your #1, then your #2. Click again to deselect.
       </p>
       <div className="grid grid-cols-4 gap-3">
         {shapes.map((shape) => {
           const rank = rankOf(shape.id)
           const ranked = rank !== null
+          const disabled = value.length === 2 && !ranked
           return (
             <button
               key={shape.id}
               type="button"
               onClick={() => handleClick(shape.id)}
+              disabled={disabled}
               className={cn(
                 "relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all",
                 ranked
                   ? "border-primary bg-primary/5"
+                  : disabled
+                  ? "border-border opacity-40 cursor-not-allowed bg-white"
                   : "border-border hover:border-primary/40 bg-white"
               )}
             >
-              <div className="relative w-16 h-16">
+              <div className="relative w-16 h-16 flex items-center justify-center">
                 <Image
                   src={shape.src}
                   alt={shape.label}
@@ -72,11 +76,14 @@ export function ShapeRanker({ value, onChange }: ShapeRankerProps) {
           )
         })}
       </div>
-      {value.length > 0 && value.length < 4 && (
-        <p className="text-sm text-muted-foreground">{4 - value.length} more to rank…</p>
+      {value.length === 0 && (
+        <p className="text-sm text-muted-foreground">Select your top shape to get started.</p>
       )}
-      {value.length === 4 && (
-        <p className="text-sm text-green-600 font-medium">All shapes ranked!</p>
+      {value.length === 1 && (
+        <p className="text-sm text-muted-foreground">Now pick your #2.</p>
+      )}
+      {value.length === 2 && (
+        <p className="text-sm text-green-600 font-medium">Got it!</p>
       )}
     </div>
   )

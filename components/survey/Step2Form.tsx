@@ -35,7 +35,7 @@ const managerOptions = [
   { value: "not_defined", label: "Not really defined" },
 ]
 
-const satisfactionLabels = ["Poor", "Fair", "Good", "Great", "Excellent"]
+const satisfactionLabels = ["Yikes 😬", "Meh 😐", "Getting there 🙂", "Pretty good 😊", "Crushing it 🎉"]
 
 export function Step2Form() {
   const { state, saveStep } = useSurvey()

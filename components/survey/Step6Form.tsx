@@ -14,28 +14,28 @@ import { cn } from "@/lib/utils"
 const reflectionOptions = [
   {
     value: "very_positive",
-    label: "Very positive",
-    desc: "I feel great about where we are",
+    label: "🌟 Honestly, pretty great",
+    desc: "We've got this — and we know it",
   },
   {
     value: "positive",
-    label: "Positive",
-    desc: "Things are going well overall",
+    label: "😊 Good vibes overall",
+    desc: "Not perfect, but we're heading in the right direction",
   },
   {
     value: "neutral",
-    label: "Neutral",
-    desc: "It's a mixed picture",
+    label: "🤷 It's complicated",
+    desc: "Some wins, some work to do — classic us",
   },
   {
     value: "uneasy",
-    label: "Uneasy",
-    desc: "Some things are worrying me",
+    label: "😟 A little stressed, not gonna lie",
+    desc: "There are things keeping me up at night",
   },
   {
     value: "concerned",
-    label: "Concerned",
-    desc: "We have significant work to do",
+    label: "😰 We really need to talk",
+    desc: "This survey just confirmed what I already knew",
   },
 ]
 
@@ -52,7 +52,6 @@ export function Step6Form() {
     defaultValues: {
       q_reflection_feeling: state.answers.q_reflection_feeling,
       q_discuss_with_partner: state.answers.q_discuss_with_partner ?? "",
-      q_missed_question: state.answers.q_missed_question ?? "",
     },
   })
 
@@ -113,21 +112,7 @@ export function Step6Form() {
         )}
       </div>
 
-      {/* Missed question (optional) */}
-      <div className="space-y-2">
-        <Label htmlFor="missed" className="text-base font-semibold">
-          {QUESTION_BY_KEY.q_missed_question}{" "}
-          <span className="text-muted-foreground font-normal">(optional)</span>
-        </Label>
-        <Textarea
-          id="missed"
-          placeholder="A question, topic, or thought you'd like to share…"
-          rows={3}
-          {...register("q_missed_question")}
-        />
-      </div>
-
-      <StepNavigation step={6} isSubmitting={isSubmitting} />
+<StepNavigation step={6} isSubmitting={isSubmitting} />
     </form>
   )
 }

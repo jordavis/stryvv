@@ -13,6 +13,7 @@ export type FinancialPriority =
   | "save_for_family"
   | "travel_experiences"
   | "financial_freedom"
+  | "other"
 export type DiscussionFrequency = "weekly" | "monthly" | "occasionally" | "rarely" | "almost_never"
 export type ConversationFeeling =
   | "easy_productive"
@@ -48,8 +49,8 @@ export interface SurveyAnswers {
   // Step 4
   q16_goal_alignment: GoalAlignment
   q17_financial_priority: FinancialPriority
+  q17_other_priority?: string
   // Step 5
-  q18_favorite_treat: string
   q19_joy_spending_moment: string
   q20_discussion_frequency: DiscussionFrequency
   q21_conversation_feeling: ConversationFeeling
@@ -58,5 +59,4 @@ export interface SurveyAnswers {
   // Step 6
   q_reflection_feeling: ReflectionFeeling
   q_discuss_with_partner: string
-  q_missed_question?: string
 }

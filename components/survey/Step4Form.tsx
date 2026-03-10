@@ -7,34 +7,35 @@ import { step4Schema, type Step4Data } from "@/lib/validations/survey"
 import { QUESTION_BY_KEY } from "@/lib/constants/survey-questions"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Input } from "@/components/ui/input"
 import { StepNavigation } from "./StepNavigation"
 import { cn } from "@/lib/utils"
 
 const goalAlignmentOptions = [
   {
     value: "very_aligned",
-    label: "Very aligned",
-    desc: "We agree on almost everything financially",
+    label: "🎯 Basically the same brain",
+    desc: "We finish each other's financial sentences",
   },
   {
     value: "mostly_aligned",
-    label: "Mostly aligned",
-    desc: "We agree on the big things",
+    label: "🤝 Pretty much on the same page",
+    desc: "We agree on the big stuff, iron out the details",
   },
   {
     value: "somewhat_aligned",
-    label: "Somewhat aligned",
-    desc: "We agree on some things but not others",
+    label: "🙂 Sorta? Kinda? Sometimes?",
+    desc: "We overlap on some things, clash on others",
   },
   {
     value: "rarely_aligned",
-    label: "Rarely aligned",
-    desc: "We often see things differently",
+    label: "🤔 We see money pretty differently",
+    desc: "More debates than agreements",
   },
   {
     value: "not_at_all",
-    label: "Not aligned at all",
-    desc: "We have very different money views",
+    label: "🙈 What alignment?",
+    desc: "We might as well be from different planets",
   },
 ]
 
@@ -47,6 +48,7 @@ const priorityOptions = [
   { value: "save_for_family", label: "Save for family / kids" },
   { value: "travel_experiences", label: "Travel & experiences" },
   { value: "financial_freedom", label: "Financial freedom" },
+  { value: "other", label: "Other" },
 ]
 
 export function Step4Form() {
@@ -61,11 +63,13 @@ export function Step4Form() {
     defaultValues: {
       q16_goal_alignment: state.answers.q16_goal_alignment,
       q17_financial_priority: state.answers.q17_financial_priority,
+      q17_other_priority: state.answers.q17_other_priority ?? "",
     },
   })
 
   const alignment = watch("q16_goal_alignment")
   const priority = watch("q17_financial_priority")
+  const otherPriority = watch("q17_other_priority")
 
   const onSubmit = (data: Step4Data) => saveStep(4, data)
 
@@ -135,6 +139,18 @@ export function Step4Form() {
         </RadioGroup>
         {errors.q17_financial_priority && (
           <p className="text-sm text-destructive">Please select one</p>
+        )}
+        {priority === "other" && (
+          <div className="space-y-2">
+            <Input
+              placeholder="Describe your financial priority…"
+              value={otherPriority ?? ""}
+              onChange={(e) => setValue("q17_other_priority", e.target.value, { shouldValidate: true })}
+            />
+            {errors.q17_other_priority && (
+              <p className="text-sm text-destructive">{errors.q17_other_priority.message}</p>
+            )}
+          </div>
         )}
       </div>
 
