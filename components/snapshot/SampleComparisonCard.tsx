@@ -1,52 +1,37 @@
 import { Lock } from "lucide-react"
 
-export function SampleComparisonCard() {
+export function PartnerVennDiagram({ styleEmoji }: { styleEmoji: string }) {
   return (
-    <div className="relative rounded-2xl border-2 border-dashed border-muted p-6 overflow-hidden">
-      {/* Blurred preview content */}
-      <div className="space-y-3 blur-sm opacity-50 select-none pointer-events-none">
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          Partner Comparison
-        </p>
-        <div className="flex gap-3">
-          <div className="flex-1 bg-primary/10 rounded-xl p-4 space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">YOU</p>
-            <p className="font-bold text-sm">The Optimizer</p>
-            <div className="space-y-1.5">
-              <div className="h-2 bg-primary rounded-full w-4/5" />
-              <div className="h-2 bg-primary/50 rounded-full w-3/5" />
-              <div className="h-2 bg-primary/25 rounded-full w-2/5" />
-            </div>
-          </div>
-          <div className="flex-1 bg-orange-100 rounded-xl p-4 space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">PARTNER</p>
-            <p className="font-bold text-sm">The Dreamer</p>
-            <div className="space-y-1.5">
-              <div className="h-2 bg-orange-400 rounded-full w-3/5" />
-              <div className="h-2 bg-orange-300 rounded-full w-4/5" />
-              <div className="h-2 bg-orange-200 rounded-full w-1/2" />
-            </div>
-          </div>
+    <div className="space-y-4">
+      <div className="relative flex items-center justify-center gap-6 h-36">
+        {/* Left circle — user */}
+        <div className="w-32 h-32 rounded-full bg-primary/15 border-2 border-primary/30 flex flex-col items-center justify-center gap-1 shrink-0">
+          <span className="text-3xl">{styleEmoji}</span>
+          <span className="text-xs font-semibold text-primary">You</span>
         </div>
-        <div className="bg-muted/50 rounded-xl p-4 space-y-1">
-          <p className="font-semibold text-sm">Compatibility Insights</p>
-          <p className="text-xs text-muted-foreground">
-            Detailed analysis of where you align and where you differ across 6 dimensions…
-          </p>
+
+        {/* Right circle — partner */}
+        <div className="w-32 h-32 rounded-full bg-orange-100 border-2 border-orange-200 flex flex-col items-center justify-center gap-1 shrink-0">
+          <span className="text-3xl text-orange-400">?</span>
+          <span className="text-xs font-semibold text-orange-600">Partner</span>
+        </div>
+
+        {/* Overlap badge — sits in the gap, slightly overlapping each circle */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md border border-border px-2 py-1.5 flex flex-col items-center gap-0.5 w-16 text-center">
+          <Lock className="h-4 w-4 text-muted-foreground" />
+          <span className="text-[9px] font-medium text-muted-foreground leading-tight">Alignment Score</span>
         </div>
       </div>
 
-      {/* Lock overlay */}
-      <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-[2px]">
-        <div className="bg-white rounded-2xl border shadow-sm p-6 mx-4 text-center space-y-2 max-w-xs">
-          <Lock className="h-6 w-6 mx-auto text-muted-foreground" />
-          <p className="font-semibold text-sm">Partner comparison is locked</p>
-          <p className="text-xs text-muted-foreground">
-            Create an account and invite your partner to unlock a side-by-side comparison of your
-            money personalities.
-          </p>
-        </div>
-      </div>
+      <p className="text-sm text-muted-foreground text-center max-w-xs mx-auto">
+        Complete the picture. Invite your partner to take the survey and unlock your{" "}
+        <span className="font-semibold text-foreground">Couples Snapshot</span>.
+      </p>
     </div>
   )
+}
+
+// Keep old export for any other potential references
+export function SampleComparisonCard() {
+  return <PartnerVennDiagram styleEmoji="📊" />
 }
