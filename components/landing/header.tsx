@@ -39,9 +39,9 @@ export function Header({ user }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-[#0b2545]">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/">
-          <Image src="/logo-white.png" alt="Stryvv" unoptimized width={120} height={29} priority />
+          <Image src="/logo-white.png" alt="Stryvv" unoptimized width={150} height={36} priority />
         </Link>
 
         {/* Desktop nav */}

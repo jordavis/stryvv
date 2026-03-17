@@ -8,13 +8,13 @@ export default function SurveyLayout({ children }: { children: React.ReactNode }
       <div className="min-h-screen bg-background">
         {/* Minimal header */}
         <header className="border-b bg-[#0b2545]">
-          <div className="mx-auto flex h-14 max-w-2xl items-center px-4">
+          <div className="mx-auto flex h-18 max-w-2xl items-center px-4">
             <Link href="/">
               <Image
                 src="/logo-white.png"
                 alt="Stryvv"
-                width={100}
-                height={24}
+                width={130}
+                height={31}
                 unoptimized
                 priority
               />
