@@ -22,7 +22,7 @@ function generateId() {
   return Math.random().toString(36).slice(2)
 }
 
-async function parseDataStream(
+async function parseTextStream(
   reader: ReadableStreamDefaultReader<Uint8Array>,
   onChunk: (text: string) => void
 ): Promise<string> {
@@ -32,23 +32,9 @@ async function parseDataStream(
   while (true) {
     const { done, value } = await reader.read()
     if (done) break
-
     const chunk = decoder.decode(value, { stream: true })
-    const lines = chunk.split("\n")
-
-    for (const line of lines) {
-      // Vercel AI data stream format: 0:"text chunk"\n
-      if (line.startsWith('0:"')) {
-        const raw = line.slice(3, -1)
-        try {
-          const text = JSON.parse('"' + raw + '"')
-          fullText += text
-          onChunk(text)
-        } catch {
-          // skip malformed chunks
-        }
-      }
-    }
+    fullText += chunk
+    onChunk(chunk)
   }
 
   return fullText
@@ -107,7 +93,7 @@ export function ChatInterface({
           throw new Error("No response from server")
         }
         const reader = response.body.getReader()
-        await parseDataStream(reader, (chunk) => {
+        await parseTextStream(reader, (chunk) => {
           setMessages((prev) =>
             prev.map((m) =>
               m.id === assistantId ? { ...m, content: m.content + chunk } : m
