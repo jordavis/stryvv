@@ -69,7 +69,7 @@ export function Header({ user }: HeaderProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <Link href="/onboarding" className="cursor-pointer">
+                  <Link href="/dashboard" className="cursor-pointer">
                     <UserIcon className="mr-2 size-4" />
                     Dashboard
                   </Link>
@@ -124,7 +124,7 @@ export function Header({ user }: HeaderProps) {
                   {user ? (
                     <div className="flex flex-col gap-2">
                       <Link
-                        href="/onboarding"
+                        href="/dashboard"
                         onClick={() => setOpen(false)}
                         className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
                       >

@@ -40,7 +40,9 @@ export default function LoginPage() {
       return
     }
 
-    router.push("/onboarding")
+    const params = new URLSearchParams(window.location.search)
+    const invite = params.get("invite")
+    router.push(invite ? `/onboarding?invite=${invite}` : "/onboarding")
     router.refresh()
   }
 

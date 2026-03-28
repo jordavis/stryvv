@@ -11,11 +11,12 @@ const STORAGE_KEY = "stryvv_survey"
 
 interface OnboardingClientProps {
   firstName: string
+  inviteCode?: string | null
 }
 
 type Mode = "creator" | "joiner"
 
-export function OnboardingClient({ firstName }: OnboardingClientProps) {
+export function OnboardingClient({ firstName, inviteCode: inviteCodeProp }: OnboardingClientProps) {
   const [inviteCode, setInviteCode] = useState<string | null>(null)
   const [householdId, setHouseholdId] = useState<string | null>(null)
   const [mode, setMode] = useState<Mode>("creator")
@@ -33,7 +34,9 @@ export function OnboardingClient({ firstName }: OnboardingClientProps) {
           await saveSurveyResponse(survey.answers)
         }
 
-        const storedInviteCode: string | null = survey?.inviteCode ?? null
+        let sessionInvite: string | null = null
+        try { sessionInvite = sessionStorage.getItem("stryvv_invite") } catch {}
+        const storedInviteCode: string | null = inviteCodeProp ?? sessionInvite ?? survey?.inviteCode ?? null
 
         if (storedInviteCode) {
           // Person 2: join an existing household
@@ -52,6 +55,7 @@ export function OnboardingClient({ firstName }: OnboardingClientProps) {
         }
 
         localStorage.removeItem(STORAGE_KEY)
+        try { sessionStorage.removeItem("stryvv_invite") } catch {}
       } catch {
         setError("Something went wrong. Please try again.")
       } finally {

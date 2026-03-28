@@ -58,7 +58,13 @@ export default function SignupPage() {
       })
     }
 
-    window.location.href = "/onboarding"
+    // Sign in immediately to ensure a confirmed session regardless of
+    // whether email confirmation was previously enabled on this project.
+    await supabase.auth.signInWithPassword({ email, password })
+
+    const params = new URLSearchParams(window.location.search)
+    const invite = params.get("invite")
+    window.location.href = invite ? `/onboarding?invite=${invite}` : "/onboarding"
   }
 
   return (
@@ -81,7 +87,7 @@ export default function SignupPage() {
                 <Input
                   id="firstName"
                   type="text"
-                  placeholder="Jordan"
+                  placeholder="Dwight"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   required
@@ -92,7 +98,7 @@ export default function SignupPage() {
                 <Input
                   id="lastName"
                   type="text"
-                  placeholder="Davis"
+                  placeholder="Schrute"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   required

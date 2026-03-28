@@ -12,7 +12,10 @@ function SurveyRedirect() {
   useEffect(() => {
     const invite = searchParams.get("invite")
     if (invite) {
-      setInviteCode(invite.toUpperCase())
+      const code = invite.toUpperCase()
+      setInviteCode(code)
+      // Store directly in sessionStorage as a reliable fallback across auth redirects
+      try { sessionStorage.setItem("stryvv_invite", code) } catch {}
     }
     const step = Math.min(state.currentStep, 6)
     router.replace(`/survey/${step}`)

@@ -31,7 +31,7 @@ export function ConnectedPanel({ firstName, householdId }: ConnectedPanelProps) 
 
   return (
     <div className="space-y-8 text-center">
-      <Image src="/logo.png" alt="Stryvv" width={120} height={29} unoptimized className="mx-auto" />
+      <Image src="/logo-green.png" alt="Stryvv" width={120} height={29} unoptimized className="mx-auto" />
 
       <div className="space-y-2">
         <CheckCircle className="mx-auto h-12 w-12 text-primary" />

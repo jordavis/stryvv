@@ -168,17 +168,17 @@ export default function SurveyCompletePage() {
       {state.inviteCode ? (
         <div className="rounded-2xl bg-primary/5 border border-primary/20 p-6 space-y-4 text-center">
           <div className="text-4xl">🎉</div>
-          <h2 className="text-xl font-bold">Your partner is waiting!</h2>
+          <h2 className="text-xl font-bold">You&apos;re almost there!</h2>
           <p className="text-sm text-muted-foreground">
             Create your free account and we&apos;ll unlock your Couples Alignment Snapshot — a
             side-by-side look at your money personalities and where you align.
           </p>
           <Button asChild size="lg" className="w-full">
-            <Link href="/signup">Create my account &amp; unlock our snapshot</Link>
+            <Link href={state.inviteCode ? `/signup?invite=${state.inviteCode}` : "/signup"}>Create my account &amp; unlock our snapshot</Link>
           </Button>
           <p className="text-xs text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/login" className="text-primary hover:underline">
+            <Link href={state.inviteCode ? `/login?invite=${state.inviteCode}` : "/login"} className="text-primary hover:underline">
               Sign in
             </Link>
           </p>

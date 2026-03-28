@@ -34,7 +34,7 @@ export default async function InvitePage({
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-lg px-4 py-12 space-y-8 text-center">
         <Image
-          src="/logo.png"
+          src="/logo-green.png"
           alt="Stryvv"
           width={120}
           height={29}
