@@ -32,7 +32,7 @@ export function InvitePanel({ firstName, inviteCode }: InvitePanelProps) {
         <h1 className="text-3xl font-bold">You&apos;re all set{firstName ? `, ${firstName}` : ""}!</h1>
         <p className="text-muted-foreground max-w-md mx-auto">
           Your Money Mindset Snapshot is being prepared. Now invite your partner to take the survey
-          too — then you'll both unlock the full side-by-side comparison.
+          too — then you&apos;ll both unlock the full side-by-side comparison.
         </p>
       </div>
 

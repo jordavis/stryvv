@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stryvv
 
-## Getting Started
+Helps couples align on money: a values survey for each partner, a shared household, and an AI coach that knows both of you.
 
-First, run the development server:
+Next.js 16 · TypeScript · Tailwind v4 · shadcn/ui · Supabase · OpenAI (Vercel AI SDK) · Resend · Vercel
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # fill in values; see comments in the file
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The database schema isn't in the repo yet (see `docs/work/2026-10-01-db-schema-in-repo/`), so local dev needs to point at a Supabase project that already has the Stryvv tables.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Everyday commands
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | What it does |
+|---|---|
+| `npm run dev` | Dev server |
+| `npm run check` | Lint + typecheck + tests, the bar for "done" |
+| `npm run test:watch` | Vitest in watch mode |
+| `npm run build` | Production build |
 
-## Learn More
+## How we work
 
-To learn more about Next.js, take a look at the following resources:
+Read **[docs/SDLC.md](docs/SDLC.md)**. It's one page. The short version:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. `/intent`: capture the idea as `docs/work/<date>-<slug>/intent.md`
+2. `/spec`: requirements and design, for risky changes only
+3. Plan mode → `plan.md` → implement
+4. `npm run check` plus a visual check
+5. `/ship` → PR → CI + review (`REVIEW.md`) → merge to `main` = production
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Agent instructions live in `CLAUDE.md`; skills, hooks and the verifier agent live in `.claude/`.

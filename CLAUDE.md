@@ -1,79 +1,52 @@
-# CLAUDE.md
+# Stryvv
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Next.js 16 App Router app that helps couples align on money. TypeScript, Tailwind v4, shadcn/ui, Supabase (auth + Postgres), Vercel AI SDK (OpenAI), Resend. Deployed on Vercel; merging to `main` deploys production.
 
 ## Commands
 
 ```bash
-npm run dev       # Start development server (localhost:3000)
-npm run build     # Production build
-npm run start     # Start production server
-npm run lint      # Run ESLint
+npm run dev        # dev server on localhost:3000 (needs .env.local, see .env.example)
+npm run check      # lint + typecheck + unit tests — run before saying a task is done
+npm run test       # vitest only ("Tests  N passed")
+npm run build      # production build
 ```
 
-There is no test suite configured.
+## Verifying your work
+
+- Run `npm run check` before reporting any task complete, and paste the summary lines.
+- Lint warnings about `react-hooks/incompatible-library` (react-hook-form `watch()`) are known; errors are not OK.
+- For UI changes, open the page in the browser pane and look at it (use the `verifier` agent for anything non-trivial).
+- If a test fails, fix the code, not the test. Never delete or skip a failing test.
+- For a bug fix, write the failing test first (see the `fix-bug` skill).
+
+## How work flows
+
+See `docs/SDLC.md`. In short: small fixes go straight to a branch + PR. Features get `docs/work/<date>-<slug>/intent.md` → (`spec.md` if risky) → `plan.md` from plan mode, committed with the code. When the implementation departs from `plan.md`, update it in the same commit.
 
 ## Architecture
 
-**Stryvv** is a Next.js 16 App Router app for couples aligning on financial goals. Built with TypeScript, Tailwind CSS v4, shadcn/ui, and Supabase (auth + PostgreSQL).
+- Flow: `/` → signup/login → `/survey/[step]` (6 steps) → `/onboarding` (create or join household) → `/dashboard` (chat coach, snapshot, money history, goals).
+- Partner joins via `/invite/[code]`.
+- `proxy.ts` is the Next.js middleware: refreshes Supabase session, protects routes. Public routes are listed there.
+- Server actions in `lib/actions/`; API routes in `app/api/` (`chat`, `money-history`).
+- Survey state: `lib/context/survey-context.tsx` (`useReducer` + localStorage `stryvv_survey`); Zod schemas in `lib/validations/survey.ts`.
+- Components: `components/ui/` (shadcn, New York/stone), `landing/`, `survey/`, `onboarding/`, `dashboard/`, `snapshot/`.
+- Tailwind v4 via `@tailwindcss/postcss` (no tailwind.config). `cn()` in `lib/utils.ts`. Brand dark blue `#0b2545`. Path alias `@/*` = repo root.
 
-### Key Flows
+## Data
 
-1. **Landing** (`/`) → **Signup/Login** → **Survey** (`/survey/[step]`) → **Onboarding** (`/onboarding`) → **Connected** (household created)
-2. **Partner join**: `/invite/[code]` → joins existing household
+Supabase tables: `profiles` (→ `household_id`), `households` (`invite_code`, 6-char uppercase), `survey_responses`, `money_histories`, `snapshots`, `chat_messages`. Everything a user sees is scoped to their household.
 
-### Auth
+| Client | Use |
+|---|---|
+| `lib/supabase/server.ts` | Server components, actions, route handlers (user's session, RLS applies) |
+| `lib/supabase/client.ts` | `"use client"` components |
+| `lib/supabase/admin.ts` | Service role, bypasses RLS. Server-only, last resort — see `data-security` skill |
 
-- Supabase SSR auth via `@supabase/ssr`
-- `proxy.ts` (root) is the Next.js middleware — refreshes sessions and protects routes
-- Auth callback at `/auth/callback` exchanges code for session and creates profile on first login
-- Public routes: `/`, `/login`, `/signup`, `/forgot-password`, `/reset-password`, `/auth/callback`, `/survey/*`, `/invite/*`
+The schema is **not yet in the repo** (no migrations). Don't guess at columns — check the code that already queries a table, or ask.
 
-### Survey Wizard
+## Things Claude gets wrong
 
-- 6-step form at `/survey/[step]` (dynamic route)
-- State managed by `SurveyContext` (`lib/context/survey-context.tsx`) using `useReducer` + `localStorage` (key: `stryvv_survey`)
-- Cannot skip ahead past `highestStep`; can navigate backward freely
-- Zod schemas in `lib/validations/survey.ts`; types in `lib/types/survey.ts`
-
-### Supabase Clients
-
-| File | Use |
-|------|-----|
-| `lib/supabase/server.ts` | Server Components, Server Actions, Route Handlers |
-| `lib/supabase/client.ts` | Client Components (`"use client"`) |
-
-### Server Actions
-
-- `lib/actions/survey.ts` — `saveSurveyResponse()`: persists survey answers to `survey_responses` table
-- `lib/actions/onboarding.ts` — `createHousehold()` (generates 6-char nanoid invite code) and `joinHousehold(inviteCode)`
-
-### Database Tables
-
-- `profiles` — `household_id`, `first_name`, `last_name`, linked to Supabase auth user
-- `households` — `invite_code` (6-char uppercase)
-- `survey_responses` — all answers, linked to user + household
-
-### Component Organization
-
-- `components/ui/` — shadcn/ui primitives (New York style, stone base color)
-- `components/landing/` — marketing page sections
-- `components/survey/` — wizard steps (`Step1Form`–`Step6Form`), `ShapeRanker`, `SurveyProgress`
-- `components/onboarding/` — `OnboardingClient`, `InvitePanel`, `ConnectedPanel`
-
-### Styling
-
-- Tailwind CSS v4 — config is via `@tailwindcss/postcss` in `postcss.config.mjs`, no `tailwind.config.js`
-- `cn()` helper in `lib/utils.ts` (clsx + tailwind-merge)
-- Brand: dark blue `#0b2545` header
-
-### Path Aliases
-
-`@/*` maps to the project root (e.g., `@/lib/utils`, `@/components/ui/button`).
-
-### Environment Variables
-
-```
-NEXT_PUBLIC_SUPABASE_URL
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-```
+- The Supabase MCP connector may point at a *different* project. Confirm the project URL matches `.env.local` before reading or changing the database.
+- Don't read or print `.env*` values. Check whether a var is set, never its value.
+- Don't push to `main` or deploy with `vercel --prod`; open a PR (hooks enforce this).
