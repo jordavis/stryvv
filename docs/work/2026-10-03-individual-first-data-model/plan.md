@@ -18,10 +18,11 @@ This plan builds that schema as migrations in the repo, with tests, against a **
 **New: database**
 - `supabase/config.toml` (new): local stack config from `supabase init`; `project_id = "stryvv"`. No keys.
 - `supabase/migrations/<ts>_profiles.sql` (new): enums (`sharing_category`, `partnership_status`, and the status/kind enums), `profiles`, the trigger that creates a profile when an auth user is created, RLS.
-- `supabase/migrations/<ts>_partnerships.sql` (new): `partnerships`, `sharing_settings`, RLS, and the functions `can_view`, `create_invite`, `preview_invite`, `accept_invite`, `end_partnership`, `get_partner` (returns the active partner's id and first name only).
+- `supabase/migrations/<ts>_partnerships.sql` (new): `partnerships`, `sharing_settings`, RLS, and the functions `can_view`, `is_partnership_member`, `is_active_partnership_member`, `create_invite`, `preview_invite`, `accept_invite`, `get_partner` (returns the active partner's id and first name only).
 - `supabase/migrations/<ts>_conversations.sql` (new): `conversations`, `messages`, owner-only RLS.
 - `supabase/migrations/<ts>_captured_records.sql` (new): `money_history_entries`, `goals`, `money_moves`, `money_move_logs`, RLS using `can_view`.
 - `supabase/migrations/<ts>_check_ins.sql` (new): `check_ins`, `measurements` (insert-only), `money_dates`, RLS.
+- `supabase/migrations/<ts>_end_partnership.sql` (new): the `end_partnership` function. It's in its own file, last, because it archives rows in tables created after `partnerships`. (Changed from the approved plan, which had it in the partnerships file.)
 
 Every table gets RLS enabled and its policies in the same file that creates it. All person-owned rows cascade on delete from `auth.users`. Definer functions set `search_path = ''` and check `auth.uid()` themselves.
 
