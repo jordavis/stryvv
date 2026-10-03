@@ -1,6 +1,6 @@
 # Intent: Individual-first data model
 
-Author: Jordan Davis. Date: 2026-10-03. Status: draft. Lane: careful.
+Author: Jordan Davis. Date: 2026-10-03. Status: accepted. Lane: careful.
 Links: [product-vision.md](../../product-vision.md), [measurement-framework.md](../../measurement-framework.md). Supersedes [2026-10-01-db-schema-in-repo](../2026-10-01-db-schema-in-repo/intent.md).
 
 ## Problem
@@ -48,9 +48,11 @@ We'll know it worked when:
 - Billing or subscriptions.
 - More than two people in a relationship, and data history across a breakup beyond "unlinking stops sharing".
 
+## Decisions on the open questions (2026-10-03)
+- **Supabase projects:** create a separate dev project. Develop against dev; production is touched only at cutover.
+- **Unlinking:** the person sees a warning that explains what will happen and must confirm. Couple-level records (shared goals, money dates) are archived, not deleted. Everything that was shared becomes hidden from the former partner.
+- **Deleting chat history:** not offered for now, to keep things simple.
+- **Research consent:** covered in the terms of service, not a separate question at signup.
+
 ## Open questions
-- **Is there a separate dev/staging Supabase project, or only production?** We want a non-production project to develop against.
-- **The Supabase connector may point at a different project.** Should we repoint it to Stryvv's?
-- **When partners unlink, what happens to couple-level records** (shared goals, money dates)? Keep a copy for each, archive them, or delete them?
-- **How long do we keep raw chat transcripts** once the structured entries exist, and can a person delete their history? (Leaning yes to deletion.)
-- **Research consent:** do we ask at signup for consent to use anonymized aggregate data, so we can report outcomes later?
+- The Supabase connector may point at a different project. Repoint it at the new dev project once it exists.
