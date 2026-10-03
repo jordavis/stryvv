@@ -1,6 +1,6 @@
 # Intent: Database schema lives in the repo
 
-Author: Jordan Davis. Date: 2026-10-01. Status: draft. Lane: careful.
+Author: Jordan Davis. Date: 2026-10-01. Status: closed (superseded by [2026-10-03-individual-first-data-model](../2026-10-03-individual-first-data-model/intent.md); fresh start means no production schema to capture). Lane: careful.
 
 ## Problem
 The Supabase schema (tables, columns, RLS policies) exists only in the hosted project. Nothing in git describes it, so:
