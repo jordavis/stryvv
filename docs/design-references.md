@@ -6,6 +6,7 @@ These are interaction patterns taken from a reference health app. Jordan likes t
 
 ## Signup
 - One centered card: first and last name side by side, then email and password, with password rules shown as helper text under the field.
+- **Stryvv also collects a mobile number** at signup, for sign-in codes and reminders. Sex assigned at birth was considered and dropped for now (2026-10-03).
 - One consent checkbox (18+, Terms, Privacy). The primary button stays disabled until the form is valid.
 - **Email verification uses a 6-digit code**, not a magic link. One large code input, "Resend code," and a hint to check spam.
 
