@@ -3,7 +3,7 @@
  * Escapes user-controlled content before processing markdown syntax.
  */
 export function markdownToHtml(markdown: string): string {
-  let html = markdown
+  const html = markdown
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")

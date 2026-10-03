@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # mcp config
 .mcp.json
@@ -43,3 +44,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /.idea/
+
+# claude code (personal settings and worktrees stay local)
+.claude/settings.local.json
+.claude/worktrees/

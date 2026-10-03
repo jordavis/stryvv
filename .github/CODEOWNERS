@@ -1,0 +1,9 @@
+# Owners are asked to review PRs touching these paths once branch protection requires it.
+# Split ownership here as the team grows (e.g. /components/landing/ @designer).
+*                 @jordavis
+
+# Controls that steer the agent: changes deserve a deliberate look.
+/CLAUDE.md        @jordavis
+/REVIEW.md        @jordavis
+/.claude/         @jordavis
+/.github/         @jordavis
