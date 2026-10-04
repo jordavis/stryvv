@@ -1,10 +1,12 @@
 -- Partnerships: the link between two people, and what each of them shares.
--- Nothing is ever copied between partners. Sharing is decided on every query by can_view().
+-- Nothing is ever copied between partners. Sharing is decided on every query.
 
 create table public.partnerships (
   id uuid primary key default gen_random_uuid(),
-  inviter_id uuid not null references auth.users (id) on delete cascade,
-  invitee_id uuid references auth.users (id) on delete cascade,
+  -- Set null, not cascade: when one person deletes their account, the partnership row stays
+  -- (ended) so the other person's couple records are not deleted with it. See end_partnership migration.
+  inviter_id uuid references auth.users (id) on delete set null,
+  invitee_id uuid references auth.users (id) on delete set null,
   status public.partnership_status not null default 'pending',
   -- A bearer token. Only ever looked up inside the functions below.
   invite_code text not null unique,
@@ -14,16 +16,45 @@ create table public.partnerships (
   ended_at timestamptz,
   ended_by uuid references auth.users (id) on delete set null,
   check (invitee_id is null or invitee_id <> inviter_id),
+  check (status = 'ended' or inviter_id is not null),
   check (status <> 'active' or invitee_id is not null)
 );
 
 -- A person can have at most one open (pending or active) partnership they started,
--- and at most one active partnership they joined. The functions below also check across both sides.
+-- and at most one active partnership they joined. The guard trigger below covers the case
+-- these two indexes can't: the same person as inviter of one and invitee of another.
 create unique index partnerships_one_open_per_inviter
   on public.partnerships (inviter_id) where status in ('pending', 'active');
 create unique index partnerships_one_active_per_invitee
   on public.partnerships (invitee_id) where status = 'active';
 create index partnerships_invitee_idx on public.partnerships (invitee_id);
+
+-- Last line of defence for "one active partnership per person", whatever path made the change.
+create function public.partnerships_guard_single_active()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if new.status = 'active' and exists (
+    select 1
+    from public.partnerships p
+    where p.id <> new.id
+      and p.status = 'active'
+      and (
+        p.inviter_id in (new.inviter_id, new.invitee_id)
+        or p.invitee_id in (new.inviter_id, new.invitee_id)
+      )
+  ) then
+    raise exception 'already_partnered';
+  end if;
+  return new;
+end;
+$$;
+
+create trigger partnerships_guard_single_active
+  before insert or update on public.partnerships
+  for each row execute function public.partnerships_guard_single_active();
 
 create table public.sharing_settings (
   partnership_id uuid not null references public.partnerships (id) on delete cascade,
@@ -43,6 +74,10 @@ create trigger sharing_settings_set_updated_at
 -- ---------------------------------------------------------------------------
 -- Helper functions used by access rules. They run as the definer so they can
 -- read partnerships and sharing_settings without re-entering those tables' rules.
+--
+-- Read policies call the no-row-argument helpers inside a scalar subquery, e.g.
+--   owner_id = (select public.partner_sharing('goals'))
+-- so Postgres evaluates them once per query, not once per row.
 -- ---------------------------------------------------------------------------
 
 -- Is the caller one of the two people in this partnership (any status)?
@@ -61,25 +96,41 @@ as $$
   );
 $$;
 
--- Is the caller one of the two people in this partnership, and is it active?
-create function public.is_active_partnership_member(_partnership_id uuid)
-returns boolean
+-- The caller's active partnership, or null.
+create function public.active_partnership_id()
+returns uuid
 language sql
 stable
 security definer
 set search_path = ''
 as $$
-  select exists (
-    select 1
-    from public.partnerships p
-    where p.id = _partnership_id
-      and p.status = 'active'
-      and (select auth.uid()) in (p.inviter_id, p.invitee_id)
-  );
+  select p.id
+  from public.partnerships p
+  where p.status = 'active'
+    and (select auth.uid()) in (p.inviter_id, p.invitee_id)
+  limit 1;
 $$;
 
--- The one rule every read policy uses: you can see a record if it is yours,
--- or if you have an active partnership with its owner and they share that category.
+-- The sharing rule: the caller's active partner's id, if that partner currently shares this category; else null.
+create function public.partner_sharing(_category public.sharing_category)
+returns uuid
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select s.owner_id
+  from public.partnerships p
+  join public.sharing_settings s on s.partnership_id = p.id
+  where p.status = 'active'
+    and (select auth.uid()) in (p.inviter_id, p.invitee_id)
+    and s.owner_id <> (select auth.uid())
+    and s.category = _category
+    and s.shared
+  limit 1;
+$$;
+
+-- The same rule for one record, for use in app code: is it mine, or my partner's and shared?
 create function public.can_view(_owner_id uuid, _category public.sharing_category)
 returns boolean
 language sql
@@ -87,22 +138,10 @@ stable
 security definer
 set search_path = ''
 as $$
-  select
-    _owner_id = (select auth.uid())
-    or exists (
-      select 1
-      from public.partnerships p
-      join public.sharing_settings s
-        on s.partnership_id = p.id
-       and s.owner_id = _owner_id
-       and s.category = _category
-      where p.status = 'active'
-        and s.shared
-        and (
-          (p.inviter_id = _owner_id and p.invitee_id = (select auth.uid()))
-          or (p.invitee_id = _owner_id and p.inviter_id = (select auth.uid()))
-        )
-    );
+  select coalesce(
+    _owner_id = (select auth.uid()) or _owner_id = public.partner_sharing(_category),
+    false
+  );
 $$;
 
 -- ---------------------------------------------------------------------------
@@ -130,12 +169,33 @@ create policy "sharing_settings: members read"
 
 create policy "sharing_settings: owner updates own"
   on public.sharing_settings for update to authenticated
-  using (owner_id = (select auth.uid()) and public.is_active_partnership_member(partnership_id))
+  using (owner_id = (select auth.uid()) and partnership_id = (select public.active_partnership_id()))
   with check (owner_id = (select auth.uid()));
 
 -- ---------------------------------------------------------------------------
 -- Invite and link functions
+--
+-- Every function that opens, accepts or ends a partnership first takes a per-person lock
+-- (lock_people). accept_invite locks both people, always in the same order, so two requests
+-- about the same people run one after the other instead of racing or deadlocking.
 -- ---------------------------------------------------------------------------
+
+create function public.lock_people(_a uuid, _b uuid default null)
+returns void
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if _b is null or _a = _b then
+    perform pg_advisory_xact_lock(hashtextextended(_a::text, 0));
+  else
+    perform pg_advisory_xact_lock(hashtextextended(least(_a, _b)::text, 0));
+    perform pg_advisory_xact_lock(hashtextextended(greatest(_a, _b)::text, 0));
+  end if;
+end;
+$$;
+
+revoke execute on function public.lock_people(uuid, uuid) from public, anon, authenticated;
 
 -- Create (or return) the caller's pending invite.
 create function public.create_invite()
@@ -156,7 +216,7 @@ begin
     raise exception 'not_authenticated';
   end if;
 
-  perform pg_advisory_xact_lock(hashtextextended(_uid::text, 0));
+  perform public.lock_people(_uid);
 
   select * into _existing
   from public.partnerships p
@@ -202,7 +262,8 @@ begin
 end;
 $$;
 
--- What an invited person may know before accepting: the inviter's first name, and whether the code still works.
+-- What an invited person may know before accepting: whether the code still works and,
+-- only if it does, the inviter's first name. A used, expired or withdrawn code reveals no name.
 create function public.preview_invite(_code text)
 returns table (inviter_first_name text, valid boolean)
 language sql
@@ -210,9 +271,11 @@ stable
 security definer
 set search_path = ''
 as $$
-  select pr.first_name, (p.status = 'pending' and p.invite_expires_at > now())
+  select
+    case when p.status = 'pending' and p.invite_expires_at > now() then pr.first_name end,
+    (p.status = 'pending' and p.invite_expires_at > now())
   from public.partnerships p
-  join public.profiles pr on pr.id = p.inviter_id
+  left join public.profiles pr on pr.id = p.inviter_id
   where (select auth.uid()) is not null
     and p.invite_code = upper(trim(_code));
 $$;
@@ -226,35 +289,50 @@ set search_path = ''
 as $$
 declare
   _uid uuid := auth.uid();
+  _inviter uuid;
   _p public.partnerships%rowtype;
 begin
   if _uid is null then
     raise exception 'not_authenticated';
   end if;
 
+  -- Find who is involved, lock both people, then read the invite again under the lock.
+  select p.inviter_id into _inviter
+  from public.partnerships p
+  where p.invite_code = upper(trim(_code));
+
+  if not found then
+    raise exception 'invite_not_found';
+  end if;
+  if _inviter is null then
+    raise exception 'invite_used';
+  end if;
+  if _inviter = _uid then
+    raise exception 'cannot_accept_own_invite';
+  end if;
+
+  perform public.lock_people(_uid, _inviter);
+
   select * into _p
   from public.partnerships p
   where p.invite_code = upper(trim(_code))
   for update;
 
-  if not found then
-    raise exception 'invite_not_found';
-  end if;
   if _p.status <> 'pending' then
     raise exception 'invite_used';
   end if;
   if _p.invite_expires_at <= now() then
     raise exception 'invite_expired';
   end if;
-  if _p.inviter_id = _uid then
-    raise exception 'cannot_accept_own_invite';
-  end if;
 
-  perform pg_advisory_xact_lock(hashtextextended(_uid::text, 0));
-
+  -- Neither person may already be in an active partnership.
   if exists (
     select 1 from public.partnerships p
-    where p.status = 'active' and _uid in (p.inviter_id, p.invitee_id)
+    where p.status = 'active'
+      and (
+        _uid in (p.inviter_id, p.invitee_id)
+        or _p.inviter_id in (p.inviter_id, p.invitee_id)
+      )
   ) then
     raise exception 'already_partnered';
   end if;
@@ -294,7 +372,8 @@ as $$
 $$;
 
 revoke execute on function public.is_partnership_member(uuid) from public, anon;
-revoke execute on function public.is_active_partnership_member(uuid) from public, anon;
+revoke execute on function public.active_partnership_id() from public, anon;
+revoke execute on function public.partner_sharing(public.sharing_category) from public, anon;
 revoke execute on function public.can_view(uuid, public.sharing_category) from public, anon;
 revoke execute on function public.create_invite() from public, anon;
 revoke execute on function public.preview_invite(text) from public, anon;
@@ -302,7 +381,8 @@ revoke execute on function public.accept_invite(text) from public, anon;
 revoke execute on function public.get_partner() from public, anon;
 
 grant execute on function public.is_partnership_member(uuid) to authenticated;
-grant execute on function public.is_active_partnership_member(uuid) to authenticated;
+grant execute on function public.active_partnership_id() to authenticated;
+grant execute on function public.partner_sharing(public.sharing_category) to authenticated;
 grant execute on function public.can_view(uuid, public.sharing_category) to authenticated;
 grant execute on function public.create_invite() to authenticated;
 grant execute on function public.preview_invite(text) to authenticated;

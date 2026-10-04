@@ -33,7 +33,8 @@ Every table gets RLS enabled and its policies in the same file that creates it. 
 - `supabase/tests/03_sharing_toggle.sql`: turning a category off hides it on the next query (requirement 7).
 - `supabase/tests/04_invites.sql`: single-use, expiry, one partnership at a time, code not readable through the table (requirements 5, 6).
 - `supabase/tests/05_unlink.sql`: either partner can end it; shared data is hidden; couple records are archived and stay with their creator (requirement 8).
-- `supabase/tests/06_append_only.sql`: measurements can't be updated or deleted; baseline stays retrievable (requirement 10).
+- `supabase/tests/06_append_only.sql`: measurements can't be updated, deleted or backdated; one baseline per person, and it stays retrievable (requirement 10).
+- `supabase/tests/07_account_deletion.sql`, `08_profiles.sql`, `99_cleanup.sql`: added after code review (see spec.md, "Changes after code review"). The helpers are dropped at the end of every run.
 
 **New / edited: app and tooling**
 - `package.json` (edit, via `npm install -D supabase`): add the Supabase CLI and scripts `db:start`, `db:stop`, `test:db` (`supabase test db`), `db:types` (`supabase gen types typescript --local > lib/types/database.ts`).

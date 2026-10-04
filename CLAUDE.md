@@ -37,7 +37,7 @@ See `docs/SDLC.md`. In short: small fixes go straight to a branch + PR. Features
 
 Two schemas exist while the app is rebuilt (see `docs/product-vision.md`):
 
-- **New, individual-first schema: `supabase/migrations/`.** Every record belongs to a person (`owner_id`). Partners link through `partnerships`; what a partner can read is decided per category by `can_view()` in RLS. Tables: `profiles`, `partnerships`, `sharing_settings`, `conversations`, `messages`, `money_history_entries`, `goals`, `money_moves`, `money_move_logs`, `check_ins`, `measurements`, `money_dates`. Types are generated into `lib/types/database.ts`. Build all new features on this.
+- **New, individual-first schema: `supabase/migrations/`.** Every record belongs to a person (`owner_id`). Partners link through `partnerships`; what a partner can read is decided per category in RLS by `partner_sharing(category)` (`can_view()` is the same rule for one record). Archiving is a timestamp (`archived_at`), never a status. Tables: `profiles`, `partnerships`, `sharing_settings`, `conversations`, `messages`, `money_history_entries`, `goals`, `money_moves`, `money_move_logs`, `check_ins`, `measurements`, `money_dates`. Types are generated into `lib/types/database.ts`. Build all new features on this.
 - **Old production schema, used by the current pages, not in the repo:** `profiles` (→ `household_id`), `households`, `survey_responses`, `money_histories`, `snapshots`, `chat_messages`, scoped by household. Don't guess at its columns: check the code that already queries a table, or ask. Don't extend it.
 
 ```bash

@@ -57,13 +57,13 @@ isOneToOne: false
                   ]
                 },"goals": {
                   Row: {
-                    "confirmed_at": string,"created_at": string,"current_amount": number,"id": string,"owner_id": string,"partnership_id": string | null,"source_conversation_id": string | null,"status": Database["public"]['Enums']["goal_status"],"target_amount": number | null,"target_date": string | null,"title": string,"updated_at": string,"why": string | null
+                    "archived_at": string | null,"confirmed_at": string,"created_at": string,"current_amount": number,"id": string,"owner_id": string,"partnership_id": string | null,"source_conversation_id": string | null,"status": Database["public"]['Enums']["goal_status"],"target_amount": number | null,"target_date": string | null,"title": string,"updated_at": string,"why": string | null
                   }
                   Insert: {
-                    "confirmed_at"?: string,"created_at"?: string,"current_amount"?: number,"id"?: string,"owner_id"?: string,"partnership_id"?: string | null,"source_conversation_id"?: string | null,"status"?: Database["public"]['Enums']["goal_status"],"target_amount"?: number | null,"target_date"?: string | null,"title": string,"updated_at"?: string,"why"?: string | null
+                    "archived_at"?: string | null,"confirmed_at"?: string,"created_at"?: string,"current_amount"?: number,"id"?: string,"owner_id"?: string,"partnership_id"?: string | null,"source_conversation_id"?: string | null,"status"?: Database["public"]['Enums']["goal_status"],"target_amount"?: number | null,"target_date"?: string | null,"title": string,"updated_at"?: string,"why"?: string | null
                   }
                   Update: {
-                    "confirmed_at"?: string,"created_at"?: string,"current_amount"?: number,"id"?: string,"owner_id"?: string,"partnership_id"?: string | null,"source_conversation_id"?: string | null,"status"?: Database["public"]['Enums']["goal_status"],"target_amount"?: number | null,"target_date"?: string | null,"title"?: string,"updated_at"?: string,"why"?: string | null
+                    "archived_at"?: string | null,"confirmed_at"?: string,"created_at"?: string,"current_amount"?: number,"id"?: string,"owner_id"?: string,"partnership_id"?: string | null,"source_conversation_id"?: string | null,"status"?: Database["public"]['Enums']["goal_status"],"target_amount"?: number | null,"target_date"?: string | null,"title"?: string,"updated_at"?: string,"why"?: string | null
                   }
                   Relationships: [
                     {
@@ -177,13 +177,13 @@ isOneToOne: false
                   ]
                 },"money_moves": {
                   Row: {
-                    "confirmed_at": string,"created_at": string,"goal_id": string | null,"id": string,"owner_id": string,"partnership_id": string | null,"source_conversation_id": string | null,"status": Database["public"]['Enums']["money_move_status"],"times_per_week": number,"title": string,"updated_at": string,"why": string | null
+                    "archived_at": string | null,"confirmed_at": string,"created_at": string,"goal_id": string | null,"id": string,"owner_id": string,"partnership_id": string | null,"source_conversation_id": string | null,"status": Database["public"]['Enums']["money_move_status"],"times_per_week": number,"title": string,"updated_at": string,"why": string | null
                   }
                   Insert: {
-                    "confirmed_at"?: string,"created_at"?: string,"goal_id"?: string | null,"id"?: string,"owner_id"?: string,"partnership_id"?: string | null,"source_conversation_id"?: string | null,"status"?: Database["public"]['Enums']["money_move_status"],"times_per_week"?: number,"title": string,"updated_at"?: string,"why"?: string | null
+                    "archived_at"?: string | null,"confirmed_at"?: string,"created_at"?: string,"goal_id"?: string | null,"id"?: string,"owner_id"?: string,"partnership_id"?: string | null,"source_conversation_id"?: string | null,"status"?: Database["public"]['Enums']["money_move_status"],"times_per_week"?: number,"title": string,"updated_at"?: string,"why"?: string | null
                   }
                   Update: {
-                    "confirmed_at"?: string,"created_at"?: string,"goal_id"?: string | null,"id"?: string,"owner_id"?: string,"partnership_id"?: string | null,"source_conversation_id"?: string | null,"status"?: Database["public"]['Enums']["money_move_status"],"times_per_week"?: number,"title"?: string,"updated_at"?: string,"why"?: string | null
+                    "archived_at"?: string | null,"confirmed_at"?: string,"created_at"?: string,"goal_id"?: string | null,"id"?: string,"owner_id"?: string,"partnership_id"?: string | null,"source_conversation_id"?: string | null,"status"?: Database["public"]['Enums']["money_move_status"],"times_per_week"?: number,"title"?: string,"updated_at"?: string,"why"?: string | null
                   }
                   Relationships: [
                     {
@@ -208,13 +208,13 @@ isOneToOne: false
                   ]
                 },"partnerships": {
                   Row: {
-                    "accepted_at": string | null,"created_at": string,"ended_at": string | null,"ended_by": string | null,"id": string,"invite_code": string,"invite_expires_at": string,"invitee_id": string | null,"inviter_id": string,"status": Database["public"]['Enums']["partnership_status"]
+                    "accepted_at": string | null,"created_at": string,"ended_at": string | null,"ended_by": string | null,"id": string,"invite_code": string,"invite_expires_at": string,"invitee_id": string | null,"inviter_id": string | null,"status": Database["public"]['Enums']["partnership_status"]
                   }
                   Insert: {
-                    "accepted_at"?: string | null,"created_at"?: string,"ended_at"?: string | null,"ended_by"?: string | null,"id"?: string,"invite_code": string,"invite_expires_at": string,"invitee_id"?: string | null,"inviter_id": string,"status"?: Database["public"]['Enums']["partnership_status"]
+                    "accepted_at"?: string | null,"created_at"?: string,"ended_at"?: string | null,"ended_by"?: string | null,"id"?: string,"invite_code": string,"invite_expires_at": string,"invitee_id"?: string | null,"inviter_id"?: string | null,"status"?: Database["public"]['Enums']["partnership_status"]
                   }
                   Update: {
-                    "accepted_at"?: string | null,"created_at"?: string,"ended_at"?: string | null,"ended_by"?: string | null,"id"?: string,"invite_code"?: string,"invite_expires_at"?: string,"invitee_id"?: string | null,"inviter_id"?: string,"status"?: Database["public"]['Enums']["partnership_status"]
+                    "accepted_at"?: string | null,"created_at"?: string,"ended_at"?: string | null,"ended_by"?: string | null,"id"?: string,"invite_code"?: string,"invite_expires_at"?: string,"invitee_id"?: string | null,"inviter_id"?: string | null,"status"?: Database["public"]['Enums']["partnership_status"]
                   }
                   Relationships: [
                     
@@ -260,6 +260,15 @@ isOneToOne: false
             "accept_invite":
 { Args: { "_code": string }; Returns: string
                            },
+"accept_terms":
+{ Args: { "_version": string }; Returns: undefined
+                           },
+"active_partnership_id":
+{ Args: Record<PropertyKey, never>; Returns: string
+                           },
+"archive_couple_records":
+{ Args: { "_partnership_id": string,"_removed_person"?: string }; Returns: undefined
+                           },
 "can_view":
 { Args: { "_category": Database["public"]['Enums']["sharing_category"],"_owner_id": string }; Returns: boolean
                            },
@@ -276,11 +285,14 @@ isOneToOne: false
               "first_name": string,"id": string
             }[]
                            },
-"is_active_partnership_member":
-{ Args: { "_partnership_id": string }; Returns: boolean
-                           },
 "is_partnership_member":
 { Args: { "_partnership_id": string }; Returns: boolean
+                           },
+"lock_people":
+{ Args: { "_a": string,"_b"?: string }; Returns: undefined
+                           },
+"partner_sharing":
+{ Args: { "_category": Database["public"]['Enums']["sharing_category"] }; Returns: string
                            },
 "preview_invite":
 { Args: { "_code": string }; Returns: {
@@ -289,7 +301,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "check_in_kind": "baseline"|"weekly"|"monthly"|"quarterly","conversation_kind": "onboarding"|"coach"|"check_in","goal_status": "active"|"reached"|"archived","message_role": "user"|"assistant","money_history_kind": "memory"|"belief"|"pattern"|"win","money_move_status": "active"|"paused"|"archived","partnership_status": "pending"|"active"|"ended","sharing_category": "money_history"|"goals"|"money_moves"|"scores"|"money_data"|"documents"
+            "check_in_kind": "baseline"|"weekly"|"monthly"|"quarterly","conversation_kind": "onboarding"|"coach"|"check_in","goal_status": "active"|"reached","message_role": "user"|"assistant","money_history_kind": "memory"|"belief"|"pattern"|"win","money_move_status": "active"|"paused","partnership_status": "pending"|"active"|"ended","sharing_category": "money_history"|"goals"|"money_moves"|"scores"|"money_data"|"documents"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -409,7 +421,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "check_in_kind": ["baseline", "weekly", "monthly", "quarterly"],"conversation_kind": ["onboarding", "coach", "check_in"],"goal_status": ["active", "reached", "archived"],"message_role": ["user", "assistant"],"money_history_kind": ["memory", "belief", "pattern", "win"],"money_move_status": ["active", "paused", "archived"],"partnership_status": ["pending", "active", "ended"],"sharing_category": ["money_history", "goals", "money_moves", "scores", "money_data", "documents"]
+            "check_in_kind": ["baseline", "weekly", "monthly", "quarterly"],"conversation_kind": ["onboarding", "coach", "check_in"],"goal_status": ["active", "reached"],"message_role": ["user", "assistant"],"money_history_kind": ["memory", "belief", "pattern", "win"],"money_move_status": ["active", "paused"],"partnership_status": ["pending", "active", "ended"],"sharing_category": ["money_history", "goals", "money_moves", "scores", "money_data", "documents"]
           }
         }
 } as const

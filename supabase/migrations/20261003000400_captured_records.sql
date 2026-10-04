@@ -1,10 +1,13 @@
 -- What the coach captures and the person confirms: money history, goals, Money Moves.
 -- A row exists only once its owner has confirmed it on a review card.
--- Reads go through can_view(), so a partner sees a category only while its owner shares it.
+-- A partner sees a category only while its owner shares it: read rules compare owner_id with
+-- partner_sharing(category), evaluated once per query.
+-- "Archived" is a timestamp (archived_at), separate from status, so archiving never erases
+-- the fact that a goal was reached or a Money Move was paused.
 
 create type public.money_history_kind as enum ('memory', 'belief', 'pattern', 'win');
-create type public.goal_status as enum ('active', 'reached', 'archived');
-create type public.money_move_status as enum ('active', 'paused', 'archived');
+create type public.goal_status as enum ('active', 'reached');
+create type public.money_move_status as enum ('active', 'paused');
 
 -- ---------------------------------------------------------------------------
 -- Money history
@@ -36,7 +39,10 @@ revoke all on table public.money_history_entries from anon;
 
 create policy "money_history_entries: owner or sharing partner reads"
   on public.money_history_entries for select to authenticated
-  using (public.can_view(owner_id, 'money_history'));
+  using (
+    owner_id = (select auth.uid())
+    or owner_id = (select public.partner_sharing('money_history'))
+  );
 
 create policy "money_history_entries: owner creates"
   on public.money_history_entries for insert to authenticated
@@ -67,6 +73,7 @@ create table public.goals (
   current_amount numeric(14, 2) not null default 0,
   target_date date,
   status public.goal_status not null default 'active',
+  archived_at timestamptz,
   source_conversation_id uuid references public.conversations (id) on delete set null,
   confirmed_at timestamptz not null default now(),
   created_at timestamptz not null default now(),
@@ -89,26 +96,27 @@ revoke all on table public.goals from anon;
 create policy "goals: owner, sharing partner, or shared-goal member reads"
   on public.goals for select to authenticated
   using (
-    public.can_view(owner_id, 'goals')
-    or (partnership_id is not null and public.is_active_partnership_member(partnership_id))
+    owner_id = (select auth.uid())
+    or owner_id = (select public.partner_sharing('goals'))
+    or partnership_id = (select public.active_partnership_id())
   );
 
 create policy "goals: owner creates"
   on public.goals for insert to authenticated
   with check (
     owner_id = (select auth.uid())
-    and (partnership_id is null or public.is_active_partnership_member(partnership_id))
+    and (partnership_id is null or partnership_id = (select public.active_partnership_id()))
   );
 
 create policy "goals: owner or shared-goal member updates"
   on public.goals for update to authenticated
   using (
     owner_id = (select auth.uid())
-    or (partnership_id is not null and public.is_active_partnership_member(partnership_id))
+    or partnership_id = (select public.active_partnership_id())
   )
   with check (
     (owner_id = (select auth.uid()) and (partnership_id is null or public.is_partnership_member(partnership_id)))
-    or (partnership_id is not null and public.is_active_partnership_member(partnership_id))
+    or partnership_id = (select public.active_partnership_id())
   );
 
 create policy "goals: owner deletes"
@@ -128,6 +136,7 @@ create table public.money_moves (
   why text check (why is null or char_length(why) <= 2000),
   times_per_week smallint not null default 1 check (times_per_week between 1 and 21),
   status public.money_move_status not null default 'active',
+  archived_at timestamptz,
   source_conversation_id uuid references public.conversations (id) on delete set null,
   confirmed_at timestamptz not null default now(),
   created_at timestamptz not null default now(),
@@ -150,26 +159,27 @@ revoke all on table public.money_moves from anon;
 create policy "money_moves: owner, sharing partner, or shared-move member reads"
   on public.money_moves for select to authenticated
   using (
-    public.can_view(owner_id, 'money_moves')
-    or (partnership_id is not null and public.is_active_partnership_member(partnership_id))
+    owner_id = (select auth.uid())
+    or owner_id = (select public.partner_sharing('money_moves'))
+    or partnership_id = (select public.active_partnership_id())
   );
 
 create policy "money_moves: owner creates"
   on public.money_moves for insert to authenticated
   with check (
     owner_id = (select auth.uid())
-    and (partnership_id is null or public.is_active_partnership_member(partnership_id))
+    and (partnership_id is null or partnership_id = (select public.active_partnership_id()))
   );
 
 create policy "money_moves: owner or shared-move member updates"
   on public.money_moves for update to authenticated
   using (
     owner_id = (select auth.uid())
-    or (partnership_id is not null and public.is_active_partnership_member(partnership_id))
+    or partnership_id = (select public.active_partnership_id())
   )
   with check (
     (owner_id = (select auth.uid()) and (partnership_id is null or public.is_partnership_member(partnership_id)))
-    or (partnership_id is not null and public.is_active_partnership_member(partnership_id))
+    or partnership_id = (select public.active_partnership_id())
   );
 
 create policy "money_moves: owner deletes"
@@ -193,12 +203,12 @@ create index money_move_logs_owner_idx on public.money_move_logs (owner_id, week
 create trigger money_move_logs_set_updated_at
   before update on public.money_move_logs
   for each row execute function public.set_updated_at();
-create trigger money_move_logs_prevent_owner_change
-  before update on public.money_move_logs
-  for each row execute function public.prevent_owner_change();
 
 alter table public.money_move_logs enable row level security;
 revoke all on table public.money_move_logs from anon;
+-- Only the count can change. A log can't be moved to another Money Move, week or person.
+revoke update on table public.money_move_logs from authenticated;
+grant update (done_count) on table public.money_move_logs to authenticated;
 
 -- Your own logs, always. Someone else's logs only while you may see their Money Moves
 -- (they share the category) or the move is one you both adopted and the link is active.
@@ -207,12 +217,11 @@ create policy "money_move_logs: own, sharing partner's, or shared-move member's"
   on public.money_move_logs for select to authenticated
   using (
     owner_id = (select auth.uid())
-    or public.can_view(owner_id, 'money_moves')
+    or owner_id = (select public.partner_sharing('money_moves'))
     or exists (
       select 1 from public.money_moves m
       where m.id = money_move_id
-        and m.partnership_id is not null
-        and public.is_active_partnership_member(m.partnership_id)
+        and m.partnership_id = (select public.active_partnership_id())
     )
   );
 
@@ -225,7 +234,7 @@ create policy "money_move_logs: person logs their own count"
       where m.id = money_move_id
         and (
           m.owner_id = (select auth.uid())
-          or (m.partnership_id is not null and public.is_active_partnership_member(m.partnership_id))
+          or m.partnership_id = (select public.active_partnership_id())
         )
     )
   );

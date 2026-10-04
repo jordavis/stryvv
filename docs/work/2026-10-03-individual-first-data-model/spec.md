@@ -59,7 +59,7 @@ Mockups: [Stryvv Core Screens](https://claude.ai/artifact/59SH5WnEdcQxGio7RjQ7ME
 | `conversations` | A chat session | `owner_id`, `kind` (`onboarding` / `coach` / `check_in`), `topic` |
 | `messages` | Chat turns | `conversation_id`, `owner_id`, `role`, `content` |
 | `money_history_entries` | Confirmed themes, beliefs, memories, wins | `owner_id`, `kind`, `title`, `description`, `attributes` (jsonb), `source_conversation_id`, `confirmed_at` |
-| `goals` | Rich-life goals | `owner_id`, `partnership_id` (set when shared), `title`, `why`, `target_amount`, `target_date`, `current_amount`, `status` (`active` / `reached` / `archived`) |
+| `goals` | Rich-life goals | `owner_id`, `partnership_id` (set when shared), `title`, `why`, `target_amount`, `target_date`, `current_amount`, `status` (`active` / `reached`), `archived_at` |
 | `money_moves` | Behaviors being worked on | `owner_id`, `partnership_id` (set when shared), `goal_id`, `title`, `why`, `times_per_week`, `status` |
 | `money_move_logs` | Weekly counts for a Money Move | `money_move_id`, `owner_id`, `week_start`, `done_count` |
 | `check_ins` | One completed check-in | `owner_id`, `kind` (`baseline` / `weekly` / `monthly` / `quarterly`), `completed_at` |
@@ -74,7 +74,9 @@ All person-owned rows use `on delete cascade` from `auth.users`, so deleting an 
 
 | Function | What it does |
 |---|---|
-| `can_view(owner uuid, category)` | True if `owner` is the caller, or the caller has an active partnership with `owner` and `owner` shares that category. Used by every read policy. |
+| `partner_sharing(category)` | The caller's active partner's id, if that partner shares the category; otherwise null. Every read policy compares `owner_id` with it, once per query. |
+| `can_view(owner uuid, category)` | The same rule for one record: true if `owner` is the caller, or the caller's active partner who shares that category. For app code. |
+| `accept_terms(version)` | Records the caller's acceptance of the terms with the server's time. The only way those columns are written. |
 | `create_invite()` | Creates a pending partnership for the caller with a random 10-character code. Fails if the caller already has a pending or active partnership. |
 | `preview_invite(code)` | Returns only the inviter's first name and whether the code is still valid. Callable before accepting. |
 | `accept_invite(code)` | Links the caller as invitee, sets status to `active`, and creates the sharing settings for both people. One transaction. |
@@ -111,6 +113,20 @@ All person-owned rows use `on delete cascade` from `auth.users`, so deleting an 
 - **Invite codes are bearer tokens.** They're 10 random characters from an unambiguous alphabet, single-use, and expire in 14 days. `preview_invite` and `accept_invite` are the only way to look one up, and they need rate limiting at the route that calls them.
 - **Phone numbers are new PII.** They live only in `profiles`, are readable only by their owner, and must not appear in logs.
 - **Logs:** IDs and error codes only, as today.
+
+## Changes after code review (2026-10-03)
+
+The review of the first implementation led to these changes, all covered by tests:
+
+- Accepting an invite locks both people in a fixed order, and a database trigger refuses a second active partnership for anyone. This closes a race that could link one person to two partners.
+- Deleting an account ends the partnership instead of deleting it, so the other person keeps the couple records they created.
+- Archiving is a timestamp (`archived_at`) on goals and Money Moves, so a reached goal stays reached after unlinking.
+- Check-in and measurement timestamps always come from the server, and each person has exactly one baseline.
+- Terms acceptance is written only by `accept_terms()`.
+- A used, expired or withdrawn invite code no longer reveals the inviter's first name.
+- A Money Move log's count can change, but the log can't be moved to another Money Move.
+- Read policies call the sharing rule once per query instead of once per row.
+- The test helpers grant nothing to app roles and are removed at the end of each run.
 
 ## Concerns flagged
 

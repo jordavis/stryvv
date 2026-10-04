@@ -13,6 +13,8 @@ create table public.check_ins (
 );
 
 create index check_ins_owner_idx on public.check_ins (owner_id, completed_at desc);
+-- One baseline per person, ever. It is the "before" that every later score is compared with.
+create unique index check_ins_one_baseline_per_owner on public.check_ins (owner_id) where kind = 'baseline';
 
 create table public.measurements (
   id uuid primary key default gen_random_uuid(),
@@ -33,12 +35,18 @@ alter table public.measurements enable row level security;
 revoke all on table public.check_ins from anon;
 revoke all on table public.measurements from anon;
 -- Append-only for the person: no edits, no deletes. Rows go only when the account is deleted.
-revoke update, delete on table public.check_ins from authenticated;
-revoke update, delete on table public.measurements from authenticated;
+-- Timestamps and ownership always come from the server, so history can't be backdated.
+revoke insert, update, delete on table public.check_ins from authenticated;
+revoke insert, update, delete on table public.measurements from authenticated;
+grant insert (kind, source_conversation_id) on table public.check_ins to authenticated;
+grant insert (check_in_id, metric, value) on table public.measurements to authenticated;
 
 create policy "check_ins: owner or sharing partner reads"
   on public.check_ins for select to authenticated
-  using (public.can_view(owner_id, 'scores'));
+  using (
+    owner_id = (select auth.uid())
+    or owner_id = (select public.partner_sharing('scores'))
+  );
 
 create policy "check_ins: owner creates"
   on public.check_ins for insert to authenticated
@@ -46,7 +54,10 @@ create policy "check_ins: owner creates"
 
 create policy "measurements: owner or sharing partner reads"
   on public.measurements for select to authenticated
-  using (public.can_view(owner_id, 'scores'));
+  using (
+    owner_id = (select auth.uid())
+    or owner_id = (select public.partner_sharing('scores'))
+  );
 
 -- A measurement can only be added to the person's own check-in.
 create policy "measurements: owner creates"
@@ -90,14 +101,14 @@ create policy "money_dates: active members, or the person who logged it"
   on public.money_dates for select to authenticated
   using (
     logged_by = (select auth.uid())
-    or public.is_active_partnership_member(partnership_id)
+    or partnership_id = (select public.active_partnership_id())
   );
 
 create policy "money_dates: active member logs"
   on public.money_dates for insert to authenticated
   with check (
     logged_by = (select auth.uid())
-    and public.is_active_partnership_member(partnership_id)
+    and partnership_id = (select public.active_partnership_id())
   );
 
 create policy "money_dates: the person who logged it updates"

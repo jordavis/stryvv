@@ -5,7 +5,7 @@ select plan(26);
 select tests.seed_linked_couple();
 
 -- Signed out: no access to any table at all.
-select tests.act_as_anon();
+reset role; select tests.act_as_anon();
 select throws_ok('select count(*) from public.profiles', '42501', null, 'anon cannot read profiles');
 select throws_ok('select count(*) from public.partnerships', '42501', null, 'anon cannot read partnerships');
 select throws_ok('select count(*) from public.sharing_settings', '42501', null, 'anon cannot read sharing_settings');
@@ -21,9 +21,9 @@ select throws_ok('select count(*) from public.money_dates', '42501', null, 'anon
 select throws_ok('select * from public.preview_invite(''ANYCODE123'')', '42501', null, 'anon cannot preview an invite');
 
 -- A stranger: signed in, linked to nobody. Sees only their own profile.
-select tests.act_as('stranger@test.dev');
+reset role; select tests.act_as('stranger@test.dev');
 select is((select count(*) from public.profiles), 1::bigint, 'stranger sees only their own profile');
-select is((select id from public.profiles), tests.uid('stranger@test.dev'), 'and it is theirs');
+select is((select id from public.profiles), current_setting('tests.stranger_id')::uuid, 'and it is theirs');
 select is((select count(*) from public.partnerships), 0::bigint, 'stranger sees no partnerships');
 select is((select count(*) from public.sharing_settings), 0::bigint, 'stranger sees no sharing settings');
 select is((select count(*) from public.conversations), 0::bigint, 'stranger sees no conversations');

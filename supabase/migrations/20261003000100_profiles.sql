@@ -59,7 +59,10 @@ alter table public.profiles enable row level security;
 
 revoke all on table public.profiles from anon;
 -- Rows are created by the trigger below and removed by the cascade from auth.users.
-revoke insert, delete on table public.profiles from authenticated;
+revoke insert, update, delete on table public.profiles from authenticated;
+-- A person can edit these directly. Terms acceptance is a record of consent,
+-- so it is written only by accept_terms() below.
+grant update (first_name, last_name, phone, onboarding_stage) on table public.profiles to authenticated;
 
 create policy "profiles: read own"
   on public.profiles for select to authenticated
@@ -94,3 +97,26 @@ revoke execute on function public.handle_new_user() from public, anon, authentic
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- Record that the caller accepted a version of the terms. The time comes from the server.
+create function public.accept_terms(_version text)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if auth.uid() is null then
+    raise exception 'not_authenticated';
+  end if;
+  if _version is null or char_length(trim(_version)) not between 1 and 50 then
+    raise exception 'invalid_terms_version';
+  end if;
+  update public.profiles
+  set terms_version = trim(_version), terms_accepted_at = now()
+  where id = auth.uid();
+end;
+$$;
+
+revoke execute on function public.accept_terms(text) from public, anon;
+grant execute on function public.accept_terms(text) to authenticated;

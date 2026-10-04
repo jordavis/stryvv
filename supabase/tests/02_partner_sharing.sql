@@ -1,12 +1,12 @@
 -- Requirements 3, 4, 11: a linked partner reads shared categories, never writes another
 -- person's records, and never sees a transcript.
 begin;
-select plan(19);
+select plan(21);
 
 select tests.seed_linked_couple();
 -- The partner can't see the owner's conversation, so remember its id for the write test below.
 select set_config('tests.conversation_id', (select id::text from public.conversations), true);
-select tests.act_as('partner@test.dev');
+reset role; select tests.act_as('partner@test.dev');
 
 -- Reads: everything is shared by default.
 select is((select count(*) from public.money_history_entries), 1::bigint, 'partner reads shared money history');
@@ -27,13 +27,13 @@ update public.money_history_entries set title = 'changed';
 update public.goals set title = 'changed' where title = 'Personal goal';
 delete from public.goals where title = 'Personal goal';
 delete from public.money_history_entries;
-select tests.act_as_admin();
+reset role;
 select is((select title from public.money_history_entries), 'Spending on fun is risky', 'partner cannot edit or delete the owner''s money history');
 select is((select count(*) from public.goals where title = 'Personal goal'), 1::bigint, 'partner cannot edit or delete the owner''s personal goal');
 
-select tests.act_as('partner@test.dev');
+reset role; select tests.act_as('partner@test.dev');
 select throws_ok(
-  format('insert into public.goals (owner_id, title) values (%L, ''planted'')', tests.uid('owner@test.dev')),
+  format('insert into public.goals (owner_id, title) values (%L, ''planted'')', current_setting('tests.owner_id')::uuid),
   '42501', null, 'partner cannot create a goal as the owner');
 select throws_ok(
   format('insert into public.messages (conversation_id, role, content) values (%L, ''user'', ''planted'')', current_setting('tests.conversation_id')),
@@ -44,7 +44,7 @@ select throws_ok('update public.measurements set value = 99', '42501', null, 'no
 update public.goals set current_amount = 250 where title = 'Shared goal';
 select is((select current_amount from public.goals where title = 'Shared goal'), 250::numeric, 'partner can update a shared goal');
 select throws_ok(
-  format('update public.goals set owner_id = %L where title = ''Shared goal''', tests.uid('partner@test.dev')),
+  format('update public.goals set owner_id = %L where title = ''Shared goal''', current_setting('tests.partner_id')::uuid),
   null, null, 'partner cannot take ownership of a shared goal');
 select lives_ok(
   $$insert into public.money_move_logs (money_move_id, week_start, done_count)
@@ -54,6 +54,13 @@ select throws_ok(
   $$insert into public.money_move_logs (money_move_id, week_start, done_count)
     select id, date '2026-09-28', 1 from public.money_moves where title = 'Personal move'$$,
   '42501', null, 'partner cannot log on the owner''s personal Money Move');
+
+-- A log's count can change; the log can't be moved to another Money Move.
+reset role; select tests.act_as('owner@test.dev');
+select lives_ok('update public.money_move_logs set done_count = 3', 'owner can change their own count');
+select throws_ok(
+  $$update public.money_move_logs set money_move_id = (select id from public.money_moves where title = 'Shared move')$$,
+  '42501', null, 'a log cannot be moved to another Money Move');
 
 select * from finish();
 rollback;

@@ -3,14 +3,16 @@
 
 create extension if not exists pgtap with schema extensions;
 
-create schema if not exists tests;
-grant usage on schema tests to anon, authenticated;
+-- The helpers are plain functions owned by the database owner. Nothing is granted to anon or
+-- authenticated, and nothing runs as definer: test files switch back with `reset role;` before
+-- calling a helper. 99_cleanup.sql drops the schema again at the end of the run.
+drop schema if exists tests cascade;
+create schema tests;
 
 -- Create a confirmed auth user. The profile row is created by the on_auth_user_created trigger.
 create or replace function tests.create_user(_email text, _first_name text default 'Test')
 returns uuid
 language plpgsql
-security definer
 set search_path = ''
 as $$
 declare
@@ -34,13 +36,12 @@ create or replace function tests.uid(_email text)
 returns uuid
 language sql
 stable
-security definer
 set search_path = ''
 as $$
   select id from auth.users where email = _email;
 $$;
 
--- Act as a signed-in user for the rest of the transaction (or until the next act_as / act_as_anon).
+-- Act as a signed-in user until the next `reset role;`. Call it as the database owner.
 create or replace function tests.act_as(_email text)
 returns void
 language plpgsql
@@ -73,20 +74,9 @@ begin
 end;
 $$;
 
--- Back to the database owner, who bypasses the access rules. Use for setup and for checking stored state.
-create or replace function tests.act_as_admin()
-returns void
-language plpgsql
-set search_path = ''
-as $$
-begin
-  perform set_config('role', 'postgres', true);
-  perform set_config('request.jwt.claims', '', true);
-end;
-$$;
-
 -- Three people: an owner, their partner, and a stranger. Links owner and partner with everything shared,
--- and gives the owner one row in every table.
+-- and gives the owner one row in every table. Their ids are left in tests.owner_id, tests.partner_id
+-- and tests.stranger_id (read with current_setting), and the caller is left as the database owner.
 create or replace function tests.seed_linked_couple()
 returns void
 language plpgsql
@@ -100,16 +90,18 @@ declare
   _move uuid;
   _check_in uuid;
 begin
-  perform tests.create_user('owner@test.dev', 'Olive');
-  perform tests.create_user('partner@test.dev', 'Pat');
-  perform tests.create_user('stranger@test.dev', 'Sam');
+  perform set_config('tests.owner_id', tests.create_user('owner@test.dev', 'Olive')::text, true);
+  perform set_config('tests.partner_id', tests.create_user('partner@test.dev', 'Pat')::text, true);
+  perform set_config('tests.stranger_id', tests.create_user('stranger@test.dev', 'Sam')::text, true);
 
   perform tests.act_as('owner@test.dev');
   select code into _code from public.create_invite();
 
+  perform set_config('role', 'postgres', true);
   perform tests.act_as('partner@test.dev');
   _partnership := public.accept_invite(_code);
 
+  perform set_config('role', 'postgres', true);
   perform tests.act_as('owner@test.dev');
   insert into public.conversations (kind, topic) values ('onboarding', 'Money history') returning id into _conversation;
   insert into public.messages (conversation_id, role, content) values (_conversation, 'user', 'Dad handled everything.');
@@ -124,11 +116,9 @@ begin
   insert into public.measurements (check_in_id, metric, value) values (_check_in, 'cfpb_score', 54);
   insert into public.money_dates (partnership_id, notes) values (_partnership, 'Talked about the Visa.');
 
-  perform tests.act_as_admin();
+  perform set_config('role', 'postgres', true);
 end;
 $$;
-
-grant execute on all functions in schema tests to anon, authenticated;
 
 begin;
 select plan(1);

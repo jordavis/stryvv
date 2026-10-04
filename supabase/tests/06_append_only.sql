@@ -1,9 +1,9 @@
 -- Requirement 10: measurements are a history. Nothing is overwritten, and the baseline stays retrievable.
 begin;
-select plan(8);
+select plan(11);
 
 select tests.seed_linked_couple();
-select tests.act_as('owner@test.dev');
+reset role; select tests.act_as('owner@test.dev');
 
 select throws_ok('update public.measurements set value = 99', '42501', null, 'owner cannot edit a measurement');
 select throws_ok('delete from public.measurements', '42501', null, 'owner cannot delete a measurement');
@@ -22,13 +22,23 @@ select is(
    where c.kind = 'baseline' and m.metric = 'cfpb_score'),
   54::numeric, 'the baseline is still retrievable');
 
+-- History can't be backdated, and there is one baseline per person.
+select throws_ok(
+  $$insert into public.check_ins (kind, completed_at) values ('weekly', now() - interval '1 year')$$,
+  '42501', null, 'a check-in cannot be backdated');
+select throws_ok(
+  $$insert into public.measurements (check_in_id, metric, value, recorded_at)
+    select id, 'stress', 3, now() - interval '1 year' from public.check_ins where kind = 'monthly'$$,
+  '42501', null, 'a measurement cannot be backdated');
+select throws_ok($$insert into public.check_ins (kind) values ('baseline')$$, '23505', null, 'a second baseline is refused');
+
 -- A measurement can't be attached to someone else's check-in.
-select tests.act_as('partner@test.dev');
+reset role; select tests.act_as('partner@test.dev');
 select throws_ok(
   $$insert into public.measurements (check_in_id, metric, value) select id, 'stress', 1 from public.check_ins$$,
   '42501', null, 'partner cannot add a measurement to the owner''s check-in');
 select throws_ok(
-  format('insert into public.check_ins (owner_id, kind) values (%L, ''weekly'')', tests.uid('owner@test.dev')),
+  format('insert into public.check_ins (owner_id, kind) values (%L, ''weekly'')', current_setting('tests.owner_id')::uuid),
   '42501', null, 'partner cannot create a check-in as the owner');
 
 select * from finish();
