@@ -33,3 +33,23 @@ jobs:
           OPENAI_API_KEY: placeholder
           RESEND_API_KEY: placeholder
           RESEND_FROM_EMAIL: noreply@example.com
+
+  db:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Starts only Postgres and applies every migration to an empty database.
+      - name: Start local database
+        run: npx supabase db start
+      - name: Access-rule tests
+        run: npm run test:db
+      - name: Generated types are up to date
+        run: |
+          npm run -s db:types
+          git diff --exit-code lib/types/database.ts

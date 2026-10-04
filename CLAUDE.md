@@ -35,7 +35,18 @@ See `docs/SDLC.md`. In short: small fixes go straight to a branch + PR. Features
 
 ## Data
 
-Supabase tables: `profiles` (→ `household_id`), `households` (`invite_code`, 6-char uppercase), `survey_responses`, `money_histories`, `snapshots`, `chat_messages`. Everything a user sees is scoped to their household.
+Two schemas exist while the app is rebuilt (see `docs/product-vision.md`):
+
+- **New, individual-first schema: `supabase/migrations/`.** Every record belongs to a person (`owner_id`). Partners link through `partnerships`; what a partner can read is decided per category in RLS by `partner_sharing(category)` (`can_view()` is the same rule for one record). Archiving is a timestamp (`archived_at`), never a status. Tables: `profiles`, `partnerships`, `sharing_settings`, `conversations`, `messages`, `money_history_entries`, `goals`, `money_moves`, `money_move_logs`, `check_ins`, `measurements`, `money_dates`. Types are generated into `lib/types/database.ts`. Build all new features on this.
+- **Old production schema, used by the current pages, not in the repo:** `profiles` (→ `household_id`), `households`, `survey_responses`, `money_histories`, `snapshots`, `chat_messages`, scoped by household. Don't guess at its columns: check the code that already queries a table, or ask. Don't extend it.
+
+```bash
+npm run db:start   # local Supabase in Docker; applies every migration
+npm run test:db    # pgTAP access-rule tests in supabase/tests/ — run after any schema or RLS change
+npm run db:types   # regenerate lib/types/database.ts; CI fails if it's stale
+```
+
+Schema changes are new migration files with RLS in the same file, plus a test. Never edit a merged migration.
 
 | Client | Use |
 |---|---|
@@ -43,10 +54,10 @@ Supabase tables: `profiles` (→ `household_id`), `households` (`invite_code`, 6
 | `lib/supabase/client.ts` | `"use client"` components |
 | `lib/supabase/admin.ts` | Service role, bypasses RLS. Server-only, last resort — see `data-security` skill |
 
-The schema is **not yet in the repo** (no migrations). Don't guess at columns — check the code that already queries a table, or ask.
-
 ## Things Claude gets wrong
 
+- `supabase db push` and `supabase db reset` are blocked by a hook, even for the local database. To re-apply migrations locally, run `npx supabase stop --no-backup` then `npm run db:start`. Pushing to a hosted project is the user's step.
+- An RLS check can't see a row inserted earlier in the *same statement*. Insert the parent (e.g. a check-in) first, then its children (measurements) in a second statement.
 - The Supabase MCP connector may point at a *different* project. Confirm the project URL matches `.env.local` before reading or changing the database.
 - Don't read or print `.env*` values. Check whether a var is set, never its value.
 - Don't push to `main` or deploy with `vercel --prod`; open a PR (hooks enforce this).
