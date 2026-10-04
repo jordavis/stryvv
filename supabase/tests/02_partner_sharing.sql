@@ -4,6 +4,8 @@ begin;
 select plan(19);
 
 select tests.seed_linked_couple();
+-- The partner can't see the owner's conversation, so remember its id for the write test below.
+select set_config('tests.conversation_id', (select id::text from public.conversations), true);
 select tests.act_as('partner@test.dev');
 
 -- Reads: everything is shared by default.
@@ -34,8 +36,8 @@ select throws_ok(
   format('insert into public.goals (owner_id, title) values (%L, ''planted'')', tests.uid('owner@test.dev')),
   '42501', null, 'partner cannot create a goal as the owner');
 select throws_ok(
-  format('insert into public.messages (conversation_id, owner_id, role, content) select id, %L, ''user'', ''x'' from public.conversations', tests.uid('owner@test.dev')),
-  null, null, 'partner cannot write into the owner''s conversation') ;
+  format('insert into public.messages (conversation_id, role, content) values (%L, ''user'', ''planted'')', current_setting('tests.conversation_id')),
+  '42501', null, 'partner cannot write into the owner''s conversation');
 select throws_ok('update public.measurements set value = 99', '42501', null, 'nobody can edit measurements');
 
 -- Shared records: both may edit, but ownership cannot be taken.

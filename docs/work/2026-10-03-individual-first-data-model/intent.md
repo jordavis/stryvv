@@ -49,10 +49,10 @@ We'll know it worked when:
 - More than two people in a relationship, and data history across a breakup beyond "unlinking stops sharing".
 
 ## Decisions on the open questions (2026-10-03)
-- **Supabase projects:** create a separate dev project. Develop against dev; production is touched only at cutover.
+- **Supabase projects:** develop against a local Supabase in Docker. (First decided as a separate hosted dev project; changed the same day because a second hosted project costs $25 a month plus compute.) Production is touched only at cutover.
 - **Unlinking:** the person sees a warning that explains what will happen and must confirm. Couple-level records (shared goals, money dates) are archived, not deleted. Everything that was shared becomes hidden from the former partner.
 - **Deleting chat history:** not offered for now, to keep things simple.
 - **Research consent:** covered in the terms of service, not a separate question at signup.
 
 ## Open questions
-- The Supabase connector may point at a different project. Repoint it at the new dev project once it exists.
+- The Supabase connector may point at a different project. It isn't needed for this work, which runs locally; check it before the production cutover.

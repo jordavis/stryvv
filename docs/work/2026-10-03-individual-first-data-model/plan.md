@@ -11,7 +11,7 @@ This plan builds that schema as migrations in the repo, with tests, against a **
 ## Before I start (your steps)
 
 1. **Install OrbStack** (chosen for running the local database): https://orbstack.dev, then open it once so Docker is running.
-2. **Create the dev Supabase project** (`stryvv-dev`) in the Supabase dashboard and send me the project ref. This doesn't block the build, which runs locally; it's needed for step 8.
+2. ~~Create the dev Supabase project.~~ **Dropped 2026-10-03:** a second hosted project costs $25 a month plus compute. The local Supabase in Docker is a full copy (database, auth, API) and is free, so development and tests use that. A hosted staging project can be added when there's something to share with other people.
 
 ## Files that change
 
@@ -56,14 +56,14 @@ Every table gets RLS enabled and its policies in the same file that creates it. 
 5. Generate `lib/types/database.ts`; add the lint ignore.
 6. Add the CI job.
 7. Update README, CLAUDE.md and the data-security skill.
-8. **You** link and push the migrations to the dev project (`npx supabase link`, then `npx supabase db push`). The repo's guard hook blocks me from running `db push`, by design. I then point the Supabase connector at dev and confirm the tables and policies match with a read-only check.
+8. ~~Push the migrations to the hosted dev project.~~ Dropped with the dev project (see above). The migrations are first applied to a hosted database at production cutover, which is its own intent.
 9. `npm run check`, then `/ship` to open the PR.
 
 To re-apply migrations locally I'll use `supabase stop --no-backup` then `supabase start`, since the guard hook also blocks `supabase db reset`.
 
 ## Risks
 
-- **A policy mistake leaks data.** This is the main risk. Guard: the tests are written to fail first, cover every table for the stranger case, and run in CI on every PR. I'll also run Supabase's security advisor against dev after step 8.
+- **A policy mistake leaks data.** This is the main risk. Guard: the tests are written to fail first, cover every table for the stranger case, and run in CI on every PR. The local schema lint also runs clean.
 - **RLS recursion or slow policies.** `can_view` reads `partnerships` and `sharing_settings`, which have their own policies. Guard: it's a definer function, so it bypasses those policies, and it's marked `stable` with indexes on `(inviter_id)`, `(invitee_id)` and `(partnership_id, owner_id, category)`.
 - **Existing app breaks.** Guard: no existing file under `app/`, `lib/actions/` or `lib/supabase/` changes, and the generated types aren't wired into the current clients. `npm run check` must stay green.
 - **Production touched by accident.** Guard: nothing is linked to production; `db push` is run only by you, only against dev.
@@ -77,4 +77,4 @@ To re-apply migrations locally I'll use `supabase stop --no-backup` then `supaba
 - `npm run db:types` produces no diff after the last migration (requirement 13).
 - CI: both the existing `check` job and the new `db` job are green on the PR.
 - `npm run check` green.
-- After step 8: the dev project lists the 12 tables with RLS enabled on each, and the security advisor reports no RLS warnings.
+- `npx supabase db lint --local` reports no schema errors. (Replaces the hosted dev project check, which was dropped with step 8.)

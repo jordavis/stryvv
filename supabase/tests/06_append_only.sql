@@ -11,8 +11,10 @@ select throws_ok('delete from public.check_ins', '42501', null, 'owner cannot de
 select throws_ok('delete from public.messages', '42501', null, 'chat messages cannot be deleted');
 
 -- A later check-in adds a row; it does not replace the baseline.
-with c as (insert into public.check_ins (kind) values ('monthly') returning id)
-insert into public.measurements (check_in_id, metric, value) select id, 'cfpb_score', 62 from c;
+-- (Two statements: a measurement must point at a check-in that already exists.)
+insert into public.check_ins (kind) values ('monthly');
+insert into public.measurements (check_in_id, metric, value)
+  select id, 'cfpb_score', 62 from public.check_ins where kind = 'monthly';
 
 select is((select count(*) from public.measurements where metric = 'cfpb_score'), 2::bigint, 'both measurements are kept');
 select is(

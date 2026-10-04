@@ -28,7 +28,7 @@ From: intent.md (2026-10-03). Status: accepted.
 12. The whole schema, every access rule (RLS policy) and every database function is in `supabase/migrations/`. A fresh Supabase project reaches a working state by applying the migrations, with no manual steps in the dashboard.
 13. `lib/types/database.ts` is generated from the schema and committed. Queries use these types instead of hand-written row shapes.
 14. Automated tests prove requirements 2, 3, 4, 7 and 8 against a real Postgres database with at least three test users (owner, partner, stranger). They run with one command.
-15. Development happens against a separate dev Supabase project. Production keeps the current schema and the current app until the new app is ready to replace it.
+15. Development happens against a local Supabase running in Docker, not a hosted project. Production keeps the current schema and the current app until the new app is ready to replace it.
 
 ## User experience
 
@@ -100,7 +100,7 @@ All person-owned rows use `on delete cascade` from `auth.users`, so deleting an 
 - New `supabase/` folder: `config.toml`, `migrations/`, and `tests/` for the access-rule tests.
 - New `lib/types/database.ts` (generated) and an `npm run db:types` script.
 - New `npm run test:db` script for the access-rule tests.
-- README: how to set up a dev project and apply migrations.
+- README: how to run the local database, apply migrations and run the tests.
 - The existing pages, `lib/actions/*` and `app/api/*` are **not changed** here. They keep working against production's current schema until each is replaced by its own intent.
 
 ## Security and privacy
@@ -115,7 +115,7 @@ All person-owned rows use `on delete cascade` from `auth.users`, so deleting an 
 ## Concerns flagged
 
 - **Dropping production tables is irreversible.** The data is test accounts only, per the intent. → Don't touch production in this work. At cutover, export a backup first, then apply the migrations to production. Cutover gets its own intent.
-- **The current app breaks if production's schema changes early.** → Requirement 15: build against dev only; production keeps the old schema until the new app replaces the old one.
+- **The current app breaks if production's schema changes early.** → Requirement 15: build against the local database only; production keeps the old schema until the new app replaces the old one.
 - **No delete for chat history, but privacy laws give people a right to deletion.** CCPA and GDPR both apply once real users sign up. → Keep "no delete button" for now, but make sure full account deletion works on request: the cascade above makes it one operation. Say so in the privacy policy.
 - **Research consent in the terms only.** Terms-only consent may not be enough for sensitive data under GDPR if Stryvv is ever offered in Europe. → Fine for a US launch. Record `terms_version` and `terms_accepted_at` on the profile so we can show who agreed to what. Have a lawyer review the terms before launch.
 - **Unilateral unlinking.** Either partner can unlink without the other's agreement. This matters for safety: money is a common means of control in abusive relationships, so nobody should need a partner's permission to stop sharing. → Keep it unilateral and immediate. The other partner sees that the link has ended, with no reason given.
@@ -126,8 +126,8 @@ All person-owned rows use `on delete cascade` from `auth.users`, so deleting an 
 
 ## Answers to intent's open questions
 
-- Dev or staging Supabase project? → Create a dev project (decided 2026-10-03). Jordan creates it in the Supabase dashboard; the project ref (not keys) goes in `supabase/config.toml`.
-- Repoint the Supabase connector? → Yes, to the dev project once it exists. Carried forward as a setup step.
+- Dev or staging Supabase project? → No hosted dev project: it costs $25 a month plus compute. Use the local Supabase in Docker (decided 2026-10-03). Add hosted staging when there's something to share.
+- Repoint the Supabase connector? → Not needed for local work. Carried forward to the production cutover.
 - What happens on unlink? → Warning and confirmation, then archive; the creator keeps each archived couple record (requirement 8).
 - Delete chat history? → Not for now. Account deletion on request still works (flagged above).
 - Research consent? → In the terms of service; acceptance is recorded on the profile.
