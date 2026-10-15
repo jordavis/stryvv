@@ -36,7 +36,7 @@ There is no signed-in state, loading state or partner state in this release, bec
 **Schema change: production's legacy schema is dropped. This cannot be undone.**
 
 Legacy objects in production today (read from the project on 2026-10-03):
-- Tables: `households` (3 rows), `profiles`, `survey_responses`, `chat_messages`, `snapshots`, `money_histories` (0 rows each).
+- Tables: `households` (28 rows), `profiles` (13), `survey_responses` (16), `chat_messages` (4), `snapshots` (1), `money_histories` (0). (Corrected 2026-10-14: the first read on 2026-10-03 used stale table statistics and showed 3 households and no other rows. Exact counts came from `count(*)` before the backup.)
 - Functions: `get_my_household_id()`, `set_updated_at()`.
 - Enum types: `conversation_feeling`, `discussion_frequency`, `finance_manager`, `finance_structure`, `financial_priority`, `goal_alignment`, `learning_style`, `money_style`, `partner_type`, `reflection_feeling`, `relationship_duration`.
 - `auth.users`: 28 rows.

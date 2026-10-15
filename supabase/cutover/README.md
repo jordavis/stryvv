@@ -7,6 +7,7 @@ Moves the production Supabase project (`osxoklzwfotyacqbhcwb`) from the legacy h
 | File | What it is |
 |---|---|
 | `drop-legacy.sql` | The one-off script for step 4. Never move it into `migrations/`. |
+| `apply-new-schema.sql` | Steps 5 and 6 in one file for the SQL editor, for when the CLI can't reach the database. Generated from `migrations/` on 2026-10-14. |
 | `legacy-fixture.sql` | Local testing only: a stand-in legacy schema to test `drop-legacy.sql` against. |
 
 ## 1. Merge the app PR
@@ -17,6 +18,13 @@ Vercel deploys the reduced site: the landing page plus `/coming-soon`. From this
 
 - `/` loads, and its buttons go to `/coming-soon`.
 - `/survey`, `/dashboard` and `/login` redirect to `/coming-soon`.
+
+## If the CLI says "IPv6 is not supported on your current network"
+
+The database's direct address is IPv6-only, and the CLI couldn't set up its IPv4 pooler connection on 2026-10-14. Two workarounds were used instead:
+
+- **Step 3:** Claude took the backup read-only through the Supabase connector, into `~/stryvv-legacy-backup/` (`schema.sql`, `data.json`, `auth-users.json`).
+- **Steps 5 and 6:** run `apply-new-schema.sql` in the SQL editor instead. It applies the six migrations and replaces the migration history in one transaction, so later CLI pushes work normally.
 
 ## 3. Back up production
 

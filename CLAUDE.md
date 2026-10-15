@@ -55,8 +55,9 @@ There is no service-role client in the codebase. If one is ever needed, it's ser
 
 ## Things Claude gets wrong
 
-- `supabase db push` and `supabase db reset` are blocked by a hook, even for the local database. To re-apply migrations locally, run `npx supabase stop --no-backup` then `npm run db:start`. Pushing to a hosted project is the user's step.
+- `supabase db push` and `supabase db reset` are blocked by a hook, even for the local database. To re-apply migrations locally, run `npx supabase stop --no-backup` then `npm run db:start`. Production schema changes go through the Supabase connector instead (see below). The CLI reaches production over the IPv4 pooler once `npx supabase link --project-ref osxoklzwfotyacqbhcwb` has run while the project is healthy.
 - An RLS check can't see a row inserted earlier in the *same statement*. Insert the parent (e.g. a check-in) first, then its children (measurements) in a second statement.
-- The Supabase MCP connector may point at a *different* project. Confirm the project URL matches `.env.local` before reading or changing the database.
+- The Supabase MCP connector may point at a *different* project. In this repo it's configured (local scope) for Stryvv production, `osxoklzwfotyacqbhcwb`; the user-level one points at another app (BarberCRM). Check `get_project_url` returns the `osxoklzwfotyacqbhcwb` URL before reading or changing anything.
+- Since 2026-10-14 the connector has **write** access to production, so Claude can apply schema changes. Rules: only apply migrations that are merged to `main`, exactly as written in `supabase/migrations/` and in order; get Jordan's go-ahead in chat for each production change; never delete data or drop tables on production (that stays Jordan's step); verify read-only afterwards. Production's migration history must keep matching `supabase/migrations/`.
 - Don't read or print `.env*` values. Check whether a var is set, never its value.
 - Don't push to `main` or deploy with `vercel --prod`; open a PR (hooks enforce this).
