@@ -6,13 +6,13 @@ Used by `/code-review` and by Claude on GitHub PRs. The human reviewer focuses o
 
 Run three passes and tag each finding with its pass:
 
-- **Bugs**: logic errors, unhandled empty/loading/error states, broken edge cases (partner not joined, survey partly done), race conditions in server actions, stale UI.
-- **Security**: apply the `data-security` skill rules 1–9. Anything that could expose one household's data to another, or put secrets or PII where they don't belong, is always Important.
+- **Bugs**: logic errors, unhandled empty/loading/error states, broken edge cases (no partner yet, partner unlinked, onboarding half done), race conditions in server actions, stale UI.
+- **Security**: apply the `data-security` skill rules 1–9. Anything that could expose one person's data to someone who isn't their partner, or a category their partner hasn't shared, or put secrets or PII where they don't belong, is always Important.
 - **Compliance**: if the PR links a `docs/work/` folder, does the diff do what `plan.md` says (and `spec.md`, if present)? Flag drift. Also flag a bug fix PR that edits an existing test, and a change that makes `CLAUDE.md` outdated.
 
 ## What Important means here
 
-Important = would break user-visible behavior, leak data across households, expose a secret, corrupt or lose data, or burn money (unbounded OpenAI calls, email loops). Everything else is a nit.
+Important = would break user-visible behavior, leak data across people, expose a secret, corrupt or lose data, or burn money (unbounded OpenAI calls, email loops). Everything else is a nit.
 
 ## Cap the nits
 

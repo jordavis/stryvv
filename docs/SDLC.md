@@ -18,7 +18,7 @@ Use the lightest lane that fits. When in doubt, go one lane heavier.
 |---|---|---|---|
 | **Quick** | Copy, styling, small bug, dependency bump; < ~1 hour | Branch + PR. Bug fixes still get a failing test first. | Fix a typo on the landing page |
 | **Feature** | New behavior a user can see | `intent.md` → `plan.md` → PR | Add a goals page |
-| **Careful** | Touches auth, household data access, DB schema, money figures, AI prompts that see user data, payments | `intent.md` → `spec.md` → `plan.md` → PR, plus `data-security` skill | Let partners see each other's survey answers |
+| **Careful** | Touches auth, personal or partner data access, DB schema, money figures, AI prompts that see user data, payments | `intent.md` → `spec.md` → `plan.md` → PR, plus `data-security` skill | Let partners see each other's survey answers |
 
 Artifacts live together, one folder per change:
 

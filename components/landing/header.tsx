@@ -3,15 +3,8 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useState } from "react"
-import { Menu, LogOut, User as UserIcon } from "lucide-react"
+import { Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
   Sheet,
   SheetContent,
@@ -26,16 +19,9 @@ const navLinks = [
   { href: "#pricing", label: "Pricing" },
 ]
 
-interface HeaderProps {
-  user: { email?: string } | null
-}
-
-export function Header({ user }: HeaderProps) {
+// While Stryvv is rebuilt there are no accounts, so the header has no sign-in state.
+export function Header() {
   const [open, setOpen] = useState(false)
-
-  const initials = user?.email
-    ? user.email.substring(0, 2).toUpperCase()
-    : null
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-[#0b2545]">
@@ -58,40 +44,9 @@ export function Header({ user }: HeaderProps) {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                  <Avatar>
-                    <AvatarFallback>{initials}</AvatarFallback>
-                  </Avatar>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard" className="cursor-pointer">
-                    <UserIcon className="mr-2 size-4" />
-                    Dashboard
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/logout" className="cursor-pointer">
-                    <LogOut className="mr-2 size-4" />
-                    Sign out
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <>
-              <Button variant="ghost" asChild className="text-white/70 hover:text-white hover:bg-white/10">
-                <Link href="/login">Login</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/survey">Start stryvving</Link>
-              </Button>
-            </>
-          )}
+          <Button asChild>
+            <Link href="/coming-soon">Start stryvving</Link>
+          </Button>
         </div>
 
         {/* Mobile nav */}
@@ -121,39 +76,11 @@ export function Header({ user }: HeaderProps) {
                   </a>
                 ))}
                 <div className="mt-4 border-t pt-4">
-                  {user ? (
-                    <div className="flex flex-col gap-2">
-                      <Link
-                        href="/dashboard"
-                        onClick={() => setOpen(false)}
-                        className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
-                      >
-                        <UserIcon className="size-4" />
-                        Dashboard
-                      </Link>
-                      <Link
-                        href="/logout"
-                        onClick={() => setOpen(false)}
-                        className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
-                      >
-                        <LogOut className="size-4" />
-                        Sign out
-                      </Link>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-2">
-                      <Button asChild>
-                        <Link href="/survey" onClick={() => setOpen(false)}>
-                          Start stryvving
-                        </Link>
-                      </Button>
-                      <Button variant="outline" asChild>
-                        <Link href="/login" onClick={() => setOpen(false)}>
-                          Login
-                        </Link>
-                      </Button>
-                    </div>
-                  )}
+                  <Button asChild className="w-full">
+                    <Link href="/coming-soon" onClick={() => setOpen(false)}>
+                      Start stryvving
+                    </Link>
+                  </Button>
                 </div>
               </nav>
             </SheetContent>
