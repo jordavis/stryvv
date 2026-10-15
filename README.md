@@ -1,6 +1,6 @@
 # Stryvv
 
-Helps couples align on money: a values survey for each partner, a shared household, and an AI coach that knows both of you.
+Helps people understand their money story and change their money habits, on their own first and then with a partner. Mobile-first and chat-led. Being rebuilt: see `docs/product-vision.md`.
 
 Next.js 16 · TypeScript · Tailwind v4 · shadcn/ui · Supabase · OpenAI (Vercel AI SDK) · Resend · Vercel
 
@@ -12,7 +12,9 @@ cp .env.example .env.local   # fill in values; see comments in the file
 npm run dev                  # http://localhost:3000
 ```
 
-**The current app still runs on the old production schema** (`households`, `survey_responses` and so on), which is not in the repo. Until the pages are rebuilt on the new schema, `npm run dev` needs `.env.local` to point at a Supabase project that has those tables.
+While the app is rebuilt, the site is the landing page plus a holding page at `/coming-soon`. Every other path redirects there.
+
+For local development, point `.env.local` at the local Supabase (`npm run db:start` prints its URL and keys).
 
 ## Database
 

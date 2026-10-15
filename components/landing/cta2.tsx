@@ -30,7 +30,7 @@ export function CTA2() {
           might just change how you talk about money forever.
         </p>
         <Button size="lg" className="mt-8" asChild>
-          <Link href="/survey">
+          <Link href="/coming-soon">
             Unlock your rich life, together
             <ArrowRight className="ml-1 size-4" />
           </Link>

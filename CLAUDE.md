@@ -14,7 +14,7 @@ npm run build      # production build
 ## Verifying your work
 
 - Run `npm run check` before reporting any task complete, and paste the summary lines.
-- Lint warnings about `react-hooks/incompatible-library` (react-hook-form `watch()`) are known; errors are not OK.
+- Lint should be clean: no errors and no warnings.
 - For UI changes, open the page in the browser pane and look at it (use the `verifier` agent for anything non-trivial).
 - If a test fails, fix the code, not the test. Never delete or skip a failing test.
 - For a bug fix, write the failing test first (see the `fix-bug` skill).
@@ -25,20 +25,18 @@ See `docs/SDLC.md`. In short: small fixes go straight to a branch + PR. Features
 
 ## Architecture
 
-- Flow: `/` → signup/login → `/survey/[step]` (6 steps) → `/onboarding` (create or join household) → `/dashboard` (chat coach, snapshot, money history, goals).
-- Partner joins via `/invite/[code]`.
-- `proxy.ts` is the Next.js middleware: refreshes Supabase session, protects routes. Public routes are listed there.
-- Server actions in `lib/actions/`; API routes in `app/api/` (`chat`, `money-history`).
-- Survey state: `lib/context/survey-context.tsx` (`useReducer` + localStorage `stryvv_survey`); Zod schemas in `lib/validations/survey.ts`.
-- Components: `components/ui/` (shadcn, New York/stone), `landing/`, `survey/`, `onboarding/`, `dashboard/`, `snapshot/`.
-- Tailwind v4 via `@tailwindcss/postcss` (no tailwind.config). `cn()` in `lib/utils.ts`. Brand dark blue `#0b2545`. Path alias `@/*` = repo root.
+Stryvv is being rebuilt as an individual-first, chat-led, mobile-first app (`docs/product-vision.md`; design system and mockups linked from `docs/design-references.md`). The old survey/household app was removed on 2026-10-14.
+
+- **Live site today:** the landing page (`app/page.tsx`, `components/landing/`) and a holding page (`app/coming-soon/`). There are no accounts and no signed-in pages yet; the new signup is the next piece of work.
+- `proxy.ts` (logic in `lib/supabase/proxy.ts`) refreshes the Supabase session and routes requests. Public routes are listed there; for now every other page redirects to `/coming-soon`, and `/api/*` passes through. Add new pages to the public list (or to signed-in protection) as they're built.
+- `lib/markdown.ts` renders model output safely (escapes HTML first). Use it for any AI text shown in the UI.
+- Components: `components/ui/` (shadcn, New York/stone) and `landing/`. New app screens should follow the Stryvv Design System, not the landing page's styling.
+- Tailwind v4 via `@tailwindcss/postcss` (no tailwind.config). `cn()` in `lib/utils.ts`. Path alias `@/*` = repo root.
 
 ## Data
 
-Two schemas exist while the app is rebuilt (see `docs/product-vision.md`):
-
-- **New, individual-first schema: `supabase/migrations/`.** Every record belongs to a person (`owner_id`). Partners link through `partnerships`; what a partner can read is decided per category in RLS by `partner_sharing(category)` (`can_view()` is the same rule for one record). Archiving is a timestamp (`archived_at`), never a status. Tables: `profiles`, `partnerships`, `sharing_settings`, `conversations`, `messages`, `money_history_entries`, `goals`, `money_moves`, `money_move_logs`, `check_ins`, `measurements`, `money_dates`. Types are generated into `lib/types/database.ts`. Build all new features on this.
-- **Old production schema, used by the current pages, not in the repo:** `profiles` (→ `household_id`), `households`, `survey_responses`, `money_histories`, `snapshots`, `chat_messages`, scoped by household. Don't guess at its columns: check the code that already queries a table, or ask. Don't extend it.
+- **Schema: `supabase/migrations/`, individual-first.** Every record belongs to a person (`owner_id`). Partners link through `partnerships`; what a partner can read is decided per category in RLS by `partner_sharing(category)` (`can_view()` is the same rule for one record). Archiving is a timestamp (`archived_at`), never a status. Tables: `profiles`, `partnerships`, `sharing_settings`, `conversations`, `messages`, `money_history_entries`, `goals`, `money_moves`, `money_move_logs`, `check_ins`, `measurements`, `money_dates`. Types are generated into `lib/types/database.ts`.
+- **Production** (project `osxoklzwfotyacqbhcwb`) is moved onto this schema by the one-off runbook in `supabase/cutover/`. Until Jordan has run it, production still has the legacy household tables; nothing in the repo reads them any more.
 
 ```bash
 npm run db:start   # local Supabase in Docker; applies every migration
@@ -52,7 +50,8 @@ Schema changes are new migration files with RLS in the same file, plus a test. N
 |---|---|
 | `lib/supabase/server.ts` | Server components, actions, route handlers (user's session, RLS applies) |
 | `lib/supabase/client.ts` | `"use client"` components |
-| `lib/supabase/admin.ts` | Service role, bypasses RLS. Server-only, last resort — see `data-security` skill |
+
+There is no service-role client in the codebase. If one is ever needed, it's server-only and a last resort; see the `data-security` skill.
 
 ## Things Claude gets wrong
 

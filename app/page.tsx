@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/landing/header"
 import { Hero } from "@/components/landing/hero"
 import { Success } from "@/components/landing/success"
@@ -10,15 +9,10 @@ import { Features } from "@/components/landing/features"
 import { CTA2 } from "@/components/landing/cta2"
 import { Footer } from "@/components/landing/footer"
 
-export default async function Home() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
+export default function Home() {
   return (
     <div className="min-h-screen">
-      <Header user={user ? { email: user.email } : null} />
+      <Header />
       <Hero />
       <Success />
       <Problem />

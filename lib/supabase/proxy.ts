@@ -1,7 +1,10 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
-const publicRoutes = ["/", "/login", "/signup", "/forgot-password", "/reset-password", "/auth", "/survey", "/invite"]
+// While Stryvv is rebuilt, the live site is the landing page plus a holding page.
+// Every other page (including old links to the survey, dashboard and invites) goes to the holding page.
+const publicRoutes = ["/", "/coming-soon"]
+const HOLDING_PAGE = "/coming-soon"
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -35,18 +38,18 @@ export async function updateSession(request: NextRequest) {
   // supabase.auth.getUser(). A simple mistake could make it very hard to debug
   // issues with users being randomly logged out.
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Refreshes the session cookie. Nothing reads the user yet; the new signup will.
+  await supabase.auth.getUser()
 
   const pathname = request.nextUrl.pathname
-  const isPublicRoute = publicRoutes.some(
-    (route) => pathname === route || pathname.startsWith(route + "/")
-  )
+  const isPublicRoute = publicRoutes.includes(pathname)
+  // API routes answer for themselves; a removed one returns 404 rather than a redirect.
+  const isApiRoute = pathname === "/api" || pathname.startsWith("/api/")
 
-  if (!user && !isPublicRoute) {
+  if (!isPublicRoute && !isApiRoute) {
     const url = request.nextUrl.clone()
-    url.pathname = "/login"
+    url.pathname = HOLDING_PAGE
+    url.search = ""
     return NextResponse.redirect(url)
   }
 
