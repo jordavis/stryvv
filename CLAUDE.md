@@ -6,6 +6,7 @@ Next.js 16 App Router app that helps couples align on money. TypeScript, Tailwin
 
 ```bash
 npm run dev        # dev server on localhost:3000 (needs .env.local, see .env.example)
+npm run dev:local  # dev server on :3001 against the LOCAL Supabase (npm run db:start); use this to test auth
 npm run check      # lint + typecheck + unit tests — run before saying a task is done
 npm run test       # vitest only ("Tests  N passed")
 npm run build      # production build
@@ -27,16 +28,17 @@ See `docs/SDLC.md`. In short: small fixes go straight to a branch + PR. Features
 
 Stryvv is being rebuilt as an individual-first, chat-led, mobile-first app (`docs/product-vision.md`; design system and mockups linked from `docs/design-references.md`). The old survey/household app was removed on 2026-10-14.
 
-- **Live site today:** the landing page (`app/page.tsx`, `components/landing/`) and a holding page (`app/coming-soon/`). There are no accounts and no signed-in pages yet; the new signup is the next piece of work.
-- `proxy.ts` (logic in `lib/supabase/proxy.ts`) refreshes the Supabase session and routes requests. Public routes are listed there; for now every other page redirects to `/coming-soon`, and `/api/*` passes through. Add new pages to the public list (or to signed-in protection) as they're built.
+- **Live site:** the landing page (`app/page.tsx`, `components/landing/`) and a holding page (`app/coming-soon/`), linked from the landing page. Signup works but is hidden: reachable only at `/signup` until onboarding ships.
+- **Auth** (`docs/work/2026-10-14-signup-email-code/`): `app/(auth)/` holds `/signup`, `/verify`, `/login`, `/forgot-password`; `app/(app)/` holds signed-in pages (`/welcome` for now) and checks the user in its layout. Server actions in `lib/actions/auth.ts`; field rules in `lib/validation/auth.ts`; error wording in `lib/actions/auth-errors.ts` (keeps sign-up, sign-in and reset from revealing whether an account exists). Email is confirmed with a 6-digit code (`{{ .Token }}` templates in `supabase/templates/`). The address moves from sign-up to the code screen in an httpOnly cookie, never in a URL.
+- `proxy.ts` (logic in `lib/supabase/proxy.ts`) refreshes the Supabase session and routes requests: public pages, auth pages (signed-in people go to `/welcome`), signed-in pages (others go to `/login`), and everything else to `/coming-soon`. `/api/*` passes through. Add each new page to one of those lists.
 - `lib/markdown.ts` renders model output safely (escapes HTML first). Use it for any AI text shown in the UI.
-- Components: `components/ui/` (shadcn, New York/stone) and `landing/`. New app screens should follow the Stryvv Design System, not the landing page's styling.
+- Components: `components/app/` for app screens (design-system Button, TextField, CodeInput, AuthCard, AppShell), `components/ui/` (shadcn) and `landing/`. App screens use the Stryvv Design System tokens in `app/globals.css` under `.stryvv-app` (Tailwind names `bg-sv-teal`, `text-sv-ink-muted`, `rounded-sv-md`, `font-sv-display`…), with Manrope and Figtree from `lib/fonts.ts`. Copy new token values from the design system's `tokens.json`; don't invent them.
 - Tailwind v4 via `@tailwindcss/postcss` (no tailwind.config). `cn()` in `lib/utils.ts`. Path alias `@/*` = repo root.
 
 ## Data
 
 - **Schema: `supabase/migrations/`, individual-first.** Every record belongs to a person (`owner_id`). Partners link through `partnerships`; what a partner can read is decided per category in RLS by `partner_sharing(category)` (`can_view()` is the same rule for one record). Archiving is a timestamp (`archived_at`), never a status. Tables: `profiles`, `partnerships`, `sharing_settings`, `conversations`, `messages`, `money_history_entries`, `goals`, `money_moves`, `money_move_logs`, `check_ins`, `measurements`, `money_dates`. Types are generated into `lib/types/database.ts`.
-- **Production** (project `osxoklzwfotyacqbhcwb`) is moved onto this schema by the one-off runbook in `supabase/cutover/`. Until Jordan has run it, production still has the legacy household tables; nothing in the repo reads them any more.
+- **Production** (project `osxoklzwfotyacqbhcwb`) is moved onto this schema by the one-off runbook in `supabase/cutover/`. The cutover was completed on 2026-10-14.
 
 ```bash
 npm run db:start   # local Supabase in Docker; applies every migration

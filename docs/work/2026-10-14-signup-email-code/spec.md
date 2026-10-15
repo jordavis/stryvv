@@ -18,7 +18,7 @@ From: intent.md (2026-10-14). Status: accepted.
 **Verify**
 5. `/verify` shows the email address the code went to, one large code field (digits only, filled automatically from the email on phones), "Verify", "Resend code" and "Use a different email".
 6. The right code signs the person in, records their acceptance of the current terms version (requirement 15), and goes to `/welcome`.
-7. A wrong or expired code shows a message that says which, keeps the field, and lets them try again or resend. Resending is disabled for 60 seconds after each send, with a visible countdown.
+7. A wrong or expired code shows one message ("That code isn't right or has expired…"), keeps the field, and lets them try again or resend. (Changed while building: Supabase returns the same error for both, so the app can't tell them apart.) Resending is disabled for 60 seconds after each send, with a visible countdown.
 8. The account can't be used for anything until the code has been entered.
 
 **Sign in, forgot password, sign out**
@@ -45,7 +45,7 @@ All screens follow the [Stryvv Core Screens](https://claude.ai/artifact/59SH5WnE
 | Screen | Empty | Working | Error | Done |
 |---|---|---|---|---|
 | Sign up | Button disabled, helper text under password | Button shows "Creating account…" and the form is locked | Field errors next to the field ("Add the rest of your email, like name@example.com"); a general error above the button if Supabase is unreachable | Goes to Verify |
-| Verify | Code field focused; "Resend code" counting down | "Checking…" | "That code isn't right. Check the email and try again." / "That code has expired. We've sent a new one." | Goes to Welcome |
+| Verify | Code field focused; "Resend code" counting down | "Checking…" | "That code isn't right or has expired. Check the email, or send a new code." | Goes to Welcome |
 | Sign in | Button disabled until both fields are filled | "Signing in…" | "That email and password don't match." | Goes to Welcome |
 | Forgot password | Email field | "Sending…" | Only network errors are shown | Code and new-password step, then Welcome |
 | Welcome | — | — | — | "You're in, Jordan." plus one line that onboarding is coming, and "Sign out" |

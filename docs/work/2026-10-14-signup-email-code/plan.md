@@ -62,3 +62,12 @@ From: intent.md / spec.md (2026-10-14). Approved: Jordan Davis, 2026-10-14.
   5. Signed out, `/welcome` → `/login`; signed in, `/signup` → `/welcome`; `/dashboard` → `/coming-soon`.
 - Read-only database check afterwards: the new profile has names, phone in `+1…` format, `terms_version` and `terms_accepted_at`.
 - Screenshots of the signup, verify and welcome screens in the PR.
+
+## Changes while building (2026-10-14)
+- **Wrong and expired codes share one message.** Supabase returns `otp_expired` for both, so the app can't say which (spec requirement 7 updated).
+- **`lib/validation/auth.ts` doesn't import `server-only`.** The package isn't installed and throws under Vitest; the file comment says to import it from server code only.
+- **The resend countdown restarts from inside the resend action,** not from an effect (React's lint rule against setting state in effects).
+- **The "use a different email" action is `startOver`,** since a name starting with `use` reads as a React hook.
+- **The logo is resized by Next.js** (`sizes="133px"`) instead of shipping the 4,688-pixel PNG.
+- **Added `npm run dev:local` (`scripts/dev-local.sh`) and a `dev-local` preview entry.** They run the app against the local Supabase stack, so testing never touches production.
+

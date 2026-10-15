@@ -27,6 +27,8 @@ npm run db:types    # regenerate lib/types/database.ts after a schema change
 npm run db:stop
 ```
 
+To try sign-up locally, start the stack and run `npm run dev:local` (port 3001, pointed at the local Supabase). Codes and other auth emails land in the local inbox at http://127.0.0.1:54324.
+
 To change the schema:
 
 1. Add a new file in `supabase/migrations/`. Never edit a migration that has merged.
@@ -42,6 +44,7 @@ Applying migrations to a hosted Supabase project is done by a person after revie
 | Command | What it does |
 |---|---|
 | `npm run dev` | Dev server |
+| `npm run dev:local` | Dev server against the local Supabase (port 3001) |
 | `npm run check` | Lint + typecheck + tests, the bar for "done" |
 | `npm run test:watch` | Vitest in watch mode |
 | `npm run test:db` | Database access-rule tests (needs `npm run db:start`) |

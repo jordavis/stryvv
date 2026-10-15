@@ -1,10 +1,19 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
-// While Stryvv is rebuilt, the live site is the landing page plus a holding page.
-// Every other page (including old links to the survey, dashboard and invites) goes to the holding page.
-const publicRoutes = ["/", "/coming-soon"]
+// Route rules (spec: docs/work/2026-10-14-signup-email-code/spec.md, requirements 12-14).
+// - Public pages anyone can open.
+// - Sign-up / sign-in pages: public, but a signed-in person is sent to /welcome.
+// - Signed-in pages: need a session, otherwise /login.
+// - Anything else (including old links to the survey, dashboard and invites) goes to the holding page.
+const PUBLIC_PAGES = ["/", "/coming-soon", "/terms", "/privacy"]
+const AUTH_PAGES = ["/signup", "/verify", "/login", "/forgot-password"]
+const SIGNED_IN_PAGES = ["/welcome"]
 const HOLDING_PAGE = "/coming-soon"
+const HOME_WHEN_SIGNED_IN = "/welcome"
+
+const matches = (pathname: string, routes: string[]) =>
+  routes.some((route) => pathname === route || pathname.startsWith(route + "/"))
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -38,19 +47,30 @@ export async function updateSession(request: NextRequest) {
   // supabase.auth.getUser(). A simple mistake could make it very hard to debug
   // issues with users being randomly logged out.
 
-  // Refreshes the session cookie. Nothing reads the user yet; the new signup will.
-  await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   const pathname = request.nextUrl.pathname
-  const isPublicRoute = publicRoutes.includes(pathname)
-  // API routes answer for themselves; a removed one returns 404 rather than a redirect.
-  const isApiRoute = pathname === "/api" || pathname.startsWith("/api/")
-
-  if (!isPublicRoute && !isApiRoute) {
+  const redirectTo = (target: string) => {
     const url = request.nextUrl.clone()
-    url.pathname = HOLDING_PAGE
+    url.pathname = target
     url.search = ""
-    return NextResponse.redirect(url)
+    const response = NextResponse.redirect(url)
+    // Keep any refreshed session cookies on the redirect.
+    supabaseResponse.cookies.getAll().forEach((cookie) => response.cookies.set(cookie))
+    return response
+  }
+
+  // API routes answer for themselves; a removed one returns 404 rather than a redirect.
+  if (pathname === "/api" || pathname.startsWith("/api/")) return supabaseResponse
+
+  if (matches(pathname, AUTH_PAGES)) {
+    if (user) return redirectTo(HOME_WHEN_SIGNED_IN)
+  } else if (matches(pathname, SIGNED_IN_PAGES)) {
+    if (!user) return redirectTo("/login")
+  } else if (!PUBLIC_PAGES.includes(pathname)) {
+    return redirectTo(HOLDING_PAGE)
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as is.
