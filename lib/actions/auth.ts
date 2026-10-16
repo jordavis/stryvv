@@ -1,11 +1,11 @@
 "use server"
 
-import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { forgetEmail, recalledEmail, rememberEmail } from "@/lib/auth/remembered-email"
 import { createClient } from "@/lib/supabase/server"
 import { TERMS_VERSION } from "@/lib/terms"
 import { codeSchema, emailSchema, newPasswordSchema, signInSchema, signUpSchema } from "@/lib/validation/auth"
-import { AUTH_MESSAGES, mapAuthError } from "./auth-errors"
+import { AUTH_MESSAGES, mapAuthError, mapResetRequestError } from "./auth-errors"
 
 // Sign-up, verification, sign-in, password reset and sign-out.
 // Every action validates on the server and uses the session client, so RLS applies.
@@ -17,33 +17,6 @@ export type AuthFormState = {
   fieldErrors?: Partial<Record<string, string>>
   /** Values to put back in the form after an error. Never includes passwords or codes. */
   values?: Record<string, string>
-}
-
-// Carries the address from sign-up (or sign-in, or forgot-password) to the code screen, so it
-// never appears in a URL. Readable only by the server, and it expires with the code.
-const PENDING_EMAIL = "sv_pending_email"
-const RESET_EMAIL = "sv_reset_email"
-
-async function rememberEmail(name: string, email: string) {
-  const jar = await cookies()
-  jar.set(name, email, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60,
-  })
-}
-
-async function recalledEmail(name: string): Promise<string | null> {
-  const jar = await cookies()
-  const parsed = emailSchema.safeParse(jar.get(name)?.value)
-  return parsed.success ? parsed.data : null
-}
-
-async function forget(name: string) {
-  const jar = await cookies()
-  jar.delete(name)
 }
 
 function firstErrors(issues: { path: PropertyKey[]; message: string }[]) {
@@ -62,15 +35,6 @@ function text(formData: FormData, key: string) {
 
 function logAuthError(step: string, error: { code?: string | null; status?: number } | null) {
   if (error) console.error(`[auth] ${step} failed`, { code: error.code ?? "unknown", status: error.status })
-}
-
-/** For the verify screen: the address the code went to, if this browser has one. */
-export async function getPendingEmail() {
-  return recalledEmail(PENDING_EMAIL)
-}
-
-export async function getResetEmail() {
-  return recalledEmail(RESET_EMAIL)
 }
 
 export async function signUp(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
@@ -106,12 +70,12 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
     return { status: "error", message: outcome.field ? undefined : outcome.message, fieldErrors, values }
   }
 
-  await rememberEmail(PENDING_EMAIL, email)
+  await rememberEmail("pending", email)
   redirect("/verify")
 }
 
 export async function verifyCode(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
-  const email = await recalledEmail(PENDING_EMAIL)
+  const email = await recalledEmail("pending")
   if (!email) {
     return { status: "error", message: "This code screen has expired. Sign in or sign up again to get a new code." }
   }
@@ -132,15 +96,16 @@ export async function verifyCode(_prev: AuthFormState, formData: FormData): Prom
   }
 
   // Everyone who reaches a code ticked the terms box at sign-up; record which version, server-side.
+  // If this fails, the signed-in layout records it on the next page (recordTermsIfMissing).
   const { error: termsError } = await supabase.rpc("accept_terms", { _version: TERMS_VERSION })
   logAuthError("accept_terms", termsError)
 
-  await forget(PENDING_EMAIL)
+  await forgetEmail("pending")
   redirect("/welcome")
 }
 
 export async function resendCode(): Promise<AuthFormState> {
-  const email = await recalledEmail(PENDING_EMAIL)
+  const email = await recalledEmail("pending")
   if (!email) {
     return { status: "error", message: "This code screen has expired. Sign in or sign up again to get a new code." }
   }
@@ -155,7 +120,7 @@ export async function resendCode(): Promise<AuthFormState> {
 }
 
 export async function startOver() {
-  await forget(PENDING_EMAIL)
+  await forgetEmail("pending")
   redirect("/signup")
 }
 
@@ -173,8 +138,13 @@ export async function signIn(_prev: AuthFormState, formData: FormData): Promise<
   if (outcome.kind === "unverified") {
     // They signed up but never entered the code: send a fresh one and take them there.
     const { error: resendError } = await supabase.auth.resend({ type: "signup", email: parsed.data.email })
-    logAuthError("resend after unverified sign-in", resendError)
-    await rememberEmail(PENDING_EMAIL, parsed.data.email)
+    const resent = mapAuthError(resendError, "resend")
+    if (resent.kind === "error") {
+      // The code screen says "we sent a code", so don't go there unless we did.
+      logAuthError("resend after unverified sign-in", resendError)
+      return { status: "error", message: resent.message, values }
+    }
+    await rememberEmail("pending", parsed.data.email)
     redirect("/verify")
   }
   if (outcome.kind === "error") {
@@ -194,20 +164,19 @@ export async function requestPasswordReset(_prev: AuthFormState, formData: FormD
 
   const supabase = await createClient()
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data)
-  const outcome = mapAuthError(error, "reset_request")
-  // Only a rate limit is worth telling someone about; anything else must look like success
-  // so the form can't be used to check whether an account exists.
-  if (outcome.kind === "error" && outcome.message === AUTH_MESSAGES.rateLimited) {
+  logAuthError("resetPasswordForEmail", error)
+  // Only a rate limit or an outage is shown; anything else looks like success (see mapResetRequestError).
+  const outcome = mapResetRequestError(error)
+  if (outcome.kind === "error") {
     return { status: "error", message: outcome.message, values }
   }
-  logAuthError("resetPasswordForEmail", error)
 
-  await rememberEmail(RESET_EMAIL, parsed.data)
+  await rememberEmail("reset", parsed.data)
   return { status: "sent", message: "If there's an account for that email, we've sent a 6-digit code.", values }
 }
 
 export async function resetPassword(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
-  const email = await recalledEmail(RESET_EMAIL)
+  const email = await recalledEmail("reset")
   if (!email) {
     return { status: "error", message: "This reset has expired. Ask for a new code." }
   }
@@ -232,18 +201,37 @@ export async function resetPassword(_prev: AuthFormState, formData: FormData): P
     return { status: "sent", fieldErrors: { code: AUTH_MESSAGES.badCode } }
   }
 
+  // The code is used up now and this browser is signed in, so a retry here would fail (and the
+  // proxy sends signed-in people away from this page). If the password can't be saved, finish on
+  // the signed-in "choose a new password" page instead.
+  await forgetEmail("reset")
   const { error: updateError } = await supabase.auth.updateUser({ password: password.data })
   const updated = mapAuthError(updateError, "reset")
   if (updated.kind === "error") {
     logAuthError("updateUser password", updateError)
-    return {
-      status: "sent",
-      fieldErrors: updated.field === "password" ? { password: updated.message } : undefined,
-      message: updated.field === "password" ? undefined : updated.message,
-    }
+    redirect(updated.field === "password" ? "/set-password?problem=weak" : "/set-password?problem=failed")
   }
 
-  await forget(RESET_EMAIL)
+  redirect("/welcome")
+}
+
+/** The signed-in "choose a new password" page. */
+export async function setNewPassword(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
+  const password = newPasswordSchema.safeParse(text(formData, "password"))
+  if (!password.success) {
+    return { status: "error", fieldErrors: { password: password.error.issues[0].message } }
+  }
+
+  const supabase = await createClient()
+  const { error } = await supabase.auth.updateUser({ password: password.data })
+  const updated = mapAuthError(error, "reset")
+  if (updated.kind === "error") {
+    logAuthError("updateUser password", error)
+    return updated.field === "password"
+      ? { status: "error", fieldErrors: { password: updated.message } }
+      : { status: "error", message: updated.message }
+  }
+
   redirect("/welcome")
 }
 

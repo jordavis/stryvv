@@ -72,6 +72,16 @@ From: intent.md / spec.md (2026-10-14). Approved: Jordan Davis, 2026-10-14.
 - **Added `npm run dev:local` (`scripts/dev-local.sh`) and a `dev-local` preview entry.** They run the app against the local Supabase stack, so testing never touches production.
 
 
+## Changes after code review (2026-10-15)
+- **A reset whose new password can't be saved finishes on `/set-password`** (new signed-in page, action `setNewPassword`). Verifying the recovery code signs the browser in and uses the code up, so retrying on `/forgot-password` was impossible.
+- **The terms version is caught up in the signed-in layout** (`lib/auth/terms.ts`) if `accept_terms()` failed after verification.
+- **The email cookies moved to `lib/auth/remembered-email.ts`,** out of the `"use server"` file, so reading them isn't a public action. The unused `getResetEmail` and `rememberedEmail` prop are gone.
+- **Forgot-password reports outages** (5xx or no answer) with the generic error; other errors still look like success (`mapResetRequestError`, tested).
+- **Signing in unverified stays on `/login` with an error if the new code couldn't be sent.**
+- **The code screen links to sign-in,** for a repeat sign-up of an already-verified address (no code is sent then).
+- **The sign-up form's phone check allows 7–15 digits** (`lib/validation/hints.ts`, tested), so short international numbers aren't blocked before the server sees them.
+- **Local `email_sent` rate limit raised from 2 to 30 an hour.**
+
 ## To do
 
 - **Find out why email from `support@stryvv.com` lands in Gmail's spam folder** (reported 2026-10-15). Things to check:

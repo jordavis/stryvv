@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { AUTH_MESSAGES, mapAuthError } from "./auth-errors"
+import { AUTH_MESSAGES, mapAuthError, mapResetRequestError } from "./auth-errors"
 
 describe("mapAuthError", () => {
   it("never reveals whether an account exists when signing in", () => {
@@ -54,5 +54,35 @@ describe("mapAuthError", () => {
 
   it("reports success when there is no error", () => {
     expect(mapAuthError(null, "verify")).toEqual({ kind: "ok" })
+  })
+})
+
+describe("mapResetRequestError", () => {
+  it("looks like success when there is no error", () => {
+    expect(mapResetRequestError(null)).toEqual({ kind: "ok" })
+  })
+
+  it("asks people to wait when rate limited", () => {
+    expect(mapResetRequestError({ code: "over_email_send_rate_limit", status: 429 })).toEqual({
+      kind: "error",
+      message: AUTH_MESSAGES.rateLimited,
+    })
+  })
+
+  it("hides other client errors, so the form can't reveal whether an account exists", () => {
+    expect(mapResetRequestError({ code: "user_not_found", status: 400 })).toEqual({ kind: "ok" })
+    expect(mapResetRequestError({ code: "validation_failed", status: 422 })).toEqual({ kind: "ok" })
+  })
+
+  it("reports an outage instead of pretending the code was sent", () => {
+    expect(mapResetRequestError({ code: "unexpected_failure", status: 500 })).toEqual({
+      kind: "error",
+      message: AUTH_MESSAGES.generic,
+    })
+    // A network failure has no HTTP status.
+    expect(mapResetRequestError({ message: "fetch failed", status: 0 })).toEqual({
+      kind: "error",
+      message: AUTH_MESSAGES.generic,
+    })
   })
 })

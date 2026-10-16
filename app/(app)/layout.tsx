@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation"
 import { AppShell } from "@/components/app/app-shell"
+import { recordTermsIfMissing } from "@/lib/auth/terms"
 import { createClient } from "@/lib/supabase/server"
 
 // Signed-in pages. The proxy also guards these; this check is the one that counts,
@@ -10,6 +11,7 @@ export default async function SignedInLayout({ children }: { children: React.Rea
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect("/login")
+  await recordTermsIfMissing(supabase)
 
   return <AppShell>{children}</AppShell>
 }

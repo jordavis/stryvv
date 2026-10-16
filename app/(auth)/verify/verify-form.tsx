@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useActionState, useEffect, useState } from "react"
 import { AuthCard, FormMessage } from "@/components/app/auth-card"
 import { Button } from "@/components/app/button"
@@ -78,11 +79,20 @@ export function VerifyForm({ email }: { email: string }) {
         </p>
       </form>
 
-      <form action={startOver} className="text-center">
-        <button type="submit" className="text-sm font-semibold text-sv-teal hover:underline">
-          Use a different email
-        </button>
-      </form>
+      <div className="flex flex-col items-center gap-2 text-sm">
+        <form action={startOver}>
+          <button type="submit" className="font-semibold text-sv-teal hover:underline">
+            Use a different email
+          </button>
+        </form>
+        {/* No code comes if the address already has a verified account; this is their way out. */}
+        <p className="text-sv-ink-muted">
+          Already have an account?{" "}
+          <Link href="/login" className="font-semibold text-sv-teal hover:underline">
+            Sign in
+          </Link>
+        </p>
+      </div>
     </AuthCard>
   )
 }

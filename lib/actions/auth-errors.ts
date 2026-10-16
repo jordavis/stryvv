@@ -53,3 +53,16 @@ export function mapAuthError(error: AuthErrorLike, context: AuthContext): AuthOu
       return { kind: "error", message: AUTH_MESSAGES.generic }
   }
 }
+
+/**
+ * Forgot-password requests. A rate limit or an outage is worth telling someone about; any other
+ * error must look like success, so the form can't be used to check whether an account exists.
+ */
+export function mapResetRequestError(error: AuthErrorLike): AuthOutcome {
+  if (!error) return { kind: "ok" }
+  const mapped = mapAuthError(error, "reset_request")
+  if (mapped.kind === "error" && mapped.message === AUTH_MESSAGES.rateLimited) return mapped
+  // No status means the request never got an answer (a network failure).
+  if (!error.status || error.status >= 500) return { kind: "error", message: AUTH_MESSAGES.generic }
+  return { kind: "ok" }
+}

@@ -1,13 +1,13 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { AuthCard } from "@/components/app/auth-card"
-import { getPendingEmail } from "@/lib/actions/auth"
+import { recalledEmail } from "@/lib/auth/remembered-email"
 import { VerifyForm } from "./verify-form"
 
 export const metadata: Metadata = { title: "Check your email | Stryvv" }
 
 export default async function VerifyPage() {
-  const email = await getPendingEmail()
+  const email = await recalledEmail("pending")
 
   if (!email) {
     return (

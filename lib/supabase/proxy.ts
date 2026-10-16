@@ -8,7 +8,7 @@ import { NextResponse, type NextRequest } from "next/server"
 // - Anything else (including old links to the survey, dashboard and invites) goes to the holding page.
 const PUBLIC_PAGES = ["/", "/coming-soon", "/terms", "/privacy"]
 const AUTH_PAGES = ["/signup", "/verify", "/login", "/forgot-password"]
-const SIGNED_IN_PAGES = ["/welcome"]
+const SIGNED_IN_PAGES = ["/welcome", "/set-password"]
 const HOLDING_PAGE = "/coming-soon"
 const HOME_WHEN_SIGNED_IN = "/welcome"
 

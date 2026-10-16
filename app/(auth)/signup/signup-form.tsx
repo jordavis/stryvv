@@ -6,6 +6,7 @@ import { AuthCard, FormMessage } from "@/components/app/auth-card"
 import { Button } from "@/components/app/button"
 import { TextField } from "@/components/app/text-field"
 import { type AuthFormState, signUp } from "@/lib/actions/auth"
+import { looksLikePhone } from "@/lib/validation/hints"
 
 const initial: AuthFormState = { status: "idle" }
 
@@ -16,7 +17,7 @@ function looksComplete(f: { firstName: string; lastName: string; email: string; 
     f.firstName.trim() !== "" &&
     f.lastName.trim() !== "" &&
     /^\S+@\S+\.\S+$/.test(f.email.trim()) &&
-    f.phone.replace(/\D/g, "").length >= 10 &&
+    looksLikePhone(f.phone) &&
     f.password.length >= 8 &&
     f.terms
   )

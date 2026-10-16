@@ -10,10 +10,10 @@ import { type AuthFormState, requestPasswordReset, resetPassword } from "@/lib/a
 
 const initial: AuthFormState = { status: "idle" }
 
-export function ForgotForm({ rememberedEmail }: { rememberedEmail: string | null }) {
+export function ForgotForm() {
   const [requestState, request, requesting] = useActionState(requestPasswordReset, initial)
   const [resetState, reset, resetting] = useActionState(resetPassword, initial)
-  const [email, setEmail] = useState(rememberedEmail ?? "")
+  const [email, setEmail] = useState("")
   const [code, setCode] = useState("")
   const [password, setPassword] = useState("")
 
