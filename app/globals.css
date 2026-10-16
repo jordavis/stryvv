@@ -126,3 +126,98 @@
     @apply bg-background text-foreground;
   }
 }
+/* ---------------------------------------------------------------------------
+ * Stryvv Design System tokens, for the app screens (sign-up onward).
+ * Source of truth: the Stryvv Design System in Claude Design, project/tokens.json
+ * (https://claude.ai/artifact/3YN9n22vGGKBZ3q1eZxVHj). Copy values from there; don't invent new ones.
+ * Applied only inside `.stryvv-app`, so the landing page keeps its current look.
+ * Light and dark follow the phone's setting.
+ * ------------------------------------------------------------------------- */
+.stryvv-app {
+  --sv-teal: #1f7a8c;
+  --sv-teal-deep: #155866;
+  --sv-teal-soft: #e3f1f3;
+  --sv-on-teal: #ffffff;
+  --sv-navy: #0b2545;
+  --sv-gold: #f2a541;
+  --sv-gold-soft: #fdf0dc;
+  --sv-gold-ink: #7a4a06;
+  --sv-bg: #f5f8f8;
+  --sv-surface: #ffffff;
+  --sv-surface-sunken: #eef3f4;
+  --sv-border: #d6e0e3;
+  --sv-border-strong: #778a99;
+  --sv-ink: #0b2545;
+  --sv-ink-muted: #4a5b6e;
+  --sv-ink-faint: #5f7080;
+  --sv-danger: #b93a2b;
+  --sv-danger-soft: #fbe9e6;
+  --sv-shadow-card: 0 1px 2px rgba(11, 37, 69, 0.06), 0 2px 8px rgba(11, 37, 69, 0.04);
+  --sv-radius-sm: 8px;
+  --sv-radius-md: 14px;
+  --sv-radius-lg: 22px;
+  color-scheme: light;
+  background: var(--sv-bg);
+  color: var(--sv-ink);
+  font-family: var(--font-figtree), system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+  .stryvv-app {
+    --sv-teal: #4fb3c4;
+    --sv-teal-deep: #8fd3de;
+    --sv-teal-soft: #12384a;
+    --sv-on-teal: #06202e;
+    --sv-gold: #f5b65a;
+    --sv-gold-soft: #3a2c14;
+    --sv-gold-ink: #f5c77e;
+    --sv-bg: #0a1a2b;
+    --sv-surface: #10243a;
+    --sv-surface-sunken: #0d1f33;
+    --sv-border: #24405c;
+    --sv-border-strong: #5f7d98;
+    --sv-ink: #eaf1f4;
+    --sv-ink-muted: #a5b7c6;
+    --sv-ink-faint: #7f95a8;
+    --sv-danger: #f08a7a;
+    --sv-danger-soft: #3d1a17;
+    --sv-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+    color-scheme: dark;
+  }
+}
+
+/* Tailwind names for the tokens: bg-sv-teal, text-sv-ink-muted, rounded-sv-md, font-sv-display … */
+@theme inline {
+  --color-sv-teal: var(--sv-teal);
+  --color-sv-teal-deep: var(--sv-teal-deep);
+  --color-sv-teal-soft: var(--sv-teal-soft);
+  --color-sv-on-teal: var(--sv-on-teal);
+  --color-sv-navy: var(--sv-navy);
+  --color-sv-gold: var(--sv-gold);
+  --color-sv-gold-soft: var(--sv-gold-soft);
+  --color-sv-gold-ink: var(--sv-gold-ink);
+  --color-sv-bg: var(--sv-bg);
+  --color-sv-surface: var(--sv-surface);
+  --color-sv-surface-sunken: var(--sv-surface-sunken);
+  --color-sv-border: var(--sv-border);
+  --color-sv-border-strong: var(--sv-border-strong);
+  --color-sv-ink: var(--sv-ink);
+  --color-sv-ink-muted: var(--sv-ink-muted);
+  --color-sv-ink-faint: var(--sv-ink-faint);
+  --color-sv-danger: var(--sv-danger);
+  --color-sv-danger-soft: var(--sv-danger-soft);
+  --radius-sv-sm: var(--sv-radius-sm);
+  --radius-sv-md: var(--sv-radius-md);
+  --radius-sv-lg: var(--sv-radius-lg);
+  --shadow-sv-card: var(--sv-shadow-card);
+  --font-sv-display: var(--font-manrope), system-ui, sans-serif;
+  --font-sv-sans: var(--font-figtree), system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Show one of two images depending on the phone's light/dark setting (e.g. the logo). */
+.stryvv-app .sv-only-dark { display: none; }
+@media (prefers-color-scheme: dark) {
+  .stryvv-app .sv-only-light { display: none; }
+  .stryvv-app .sv-only-dark { display: block; }
+}
