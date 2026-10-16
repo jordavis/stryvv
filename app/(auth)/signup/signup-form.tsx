@@ -38,7 +38,7 @@ export function SignUpForm() {
 
   return (
     <>
-      <AuthCard title="Create your account" subtitle="Start your money story. It takes about 5 minutes.">
+      <AuthCard title="Create your account" subtitle="Take your first steps toward a rich life. It takes about 5 minutes.">
         <form action={action} className="flex flex-col gap-3" noValidate>
           <div className="grid grid-cols-2 gap-2.5">
             <TextField

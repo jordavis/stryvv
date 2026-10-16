@@ -71,3 +71,12 @@ From: intent.md / spec.md (2026-10-14). Approved: Jordan Davis, 2026-10-14.
 - **The logo is resized by Next.js** (`sizes="133px"`) instead of shipping the 4,688-pixel PNG.
 - **Added `npm run dev:local` (`scripts/dev-local.sh`) and a `dev-local` preview entry.** They run the app against the local Supabase stack, so testing never touches production.
 
+
+## To do
+
+- **Find out why email from `support@stryvv.com` lands in Gmail's spam folder** (reported 2026-10-15). Things to check:
+  - Resend shows `stryvv.com` as **Verified**, and the message headers show `spf=pass`, `dkim=pass` with `d=stryvv.com`, and `dmarc=pass` (Gmail → ⋮ → Show original).
+  - DMARC is `p=quarantine` on a brand-new sending domain. Consider `p=none` with reports while the domain builds a reputation, then tighten it.
+  - The root SPF record only includes Cloudflare's routing. That's fine if Resend's bounce domain (`send.stryvv.com`) is what Gmail checks; confirm in the headers.
+  - Domain reputation: new domains start cold. Send a steady trickle of real messages, and register `stryvv.com` with Google Postmaster Tools to watch spam rates.
+  - Content: run a message through a spam checker (e.g. mail-tester.com). A plain-text part, a physical address in the footer and a short, specific subject usually help.

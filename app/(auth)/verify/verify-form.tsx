@@ -35,8 +35,9 @@ export function VerifyForm({ email }: { email: string }) {
       title="Check your email"
       subtitle={
         <>
-          We sent a 6-digit code to <strong className="font-semibold text-sv-ink break-all">{email}</strong>. Enter it below
-          to continue.
+          We sent a 6-digit code to
+          <EmailAddress email={email} />
+          Enter it below to continue.
         </>
       }
     >
@@ -83,5 +84,22 @@ export function VerifyForm({ email }: { email: string }) {
         </button>
       </form>
     </AuthCard>
+  )
+}
+
+/**
+ * The address on its own line, kept whole. If it's too long for a narrow phone, it may break
+ * only right before the "@", never in the middle of a word.
+ */
+function EmailAddress({ email }: { email: string }) {
+  const at = email.lastIndexOf("@")
+  const local = at > 0 ? email.slice(0, at) : email
+  const domain = at > 0 ? email.slice(at) : ""
+  return (
+    <strong className="block py-0.5 font-semibold text-sv-ink">
+      <span className="whitespace-nowrap">{local}</span>
+      <wbr />
+      <span className="whitespace-nowrap">{domain}</span>
+    </strong>
   )
 }
