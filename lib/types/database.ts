@@ -263,14 +263,8 @@ isOneToOne: false
 "accept_terms":
 { Args: { "_version": string }; Returns: undefined
                            },
-"active_partnership_id":
-{ Args: Record<PropertyKey, never>; Returns: string
-                           },
 "archive_couple_records":
 { Args: { "_partnership_id": string,"_removed_person"?: string }; Returns: undefined
-                           },
-"can_view":
-{ Args: { "_category": Database["public"]['Enums']["sharing_category"],"_owner_id": string }; Returns: boolean
                            },
 "create_invite":
 { Args: Record<PropertyKey, never>; Returns: {
@@ -285,14 +279,8 @@ isOneToOne: false
               "first_name": string,"id": string
             }[]
                            },
-"is_partnership_member":
-{ Args: { "_partnership_id": string }; Returns: boolean
-                           },
 "lock_people":
 { Args: { "_a": string,"_b"?: string }; Returns: undefined
-                           },
-"partner_sharing":
-{ Args: { "_category": Database["public"]['Enums']["sharing_category"] }; Returns: string
                            },
 "preview_invite":
 { Args: { "_code": string }; Returns: {

@@ -37,7 +37,7 @@ Stryvv is being rebuilt as an individual-first, chat-led, mobile-first app (`doc
 
 ## Data
 
-- **Schema: `supabase/migrations/`, individual-first.** Every record belongs to a person (`owner_id`). Partners link through `partnerships`; what a partner can read is decided per category in RLS by `partner_sharing(category)` (`can_view()` is the same rule for one record). Archiving is a timestamp (`archived_at`), never a status. Tables: `profiles`, `partnerships`, `sharing_settings`, `conversations`, `messages`, `money_history_entries`, `goals`, `money_moves`, `money_move_logs`, `check_ins`, `measurements`, `money_dates`. Types are generated into `lib/types/database.ts`.
+- **Schema: `supabase/migrations/`, individual-first.** Every record belongs to a person (`owner_id`). Partners link through `partnerships`; what a partner can read is decided per category in RLS by `private.partner_sharing(category)` (`private.can_view()` is the same rule for one record). Helpers that policies call live in the `private` schema, which the API doesn't serve; only functions the app calls with `rpc()` go in `public`. Archiving is a timestamp (`archived_at`), never a status. Tables: `profiles`, `partnerships`, `sharing_settings`, `conversations`, `messages`, `money_history_entries`, `goals`, `money_moves`, `money_move_logs`, `check_ins`, `measurements`, `money_dates`. Types are generated into `lib/types/database.ts`.
 - **Production** (project `osxoklzwfotyacqbhcwb`) is moved onto this schema by the one-off runbook in `supabase/cutover/`. The cutover was completed on 2026-10-14.
 
 ```bash
