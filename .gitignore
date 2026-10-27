@@ -48,3 +48,6 @@ next-env.d.ts
 # claude code (personal settings and worktrees stay local)
 .claude/settings.local.json
 .claude/worktrees/
+
+# Python virtualenvs (design/logo scripts)
+.venv/
