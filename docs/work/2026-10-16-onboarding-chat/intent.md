@@ -14,7 +14,7 @@ People can now create an account at `app.stryvv.com/signup`, but after they veri
 - **The chat covers three things, in about 8 minutes in total:**
   1. **Money history:** how they grew up with money and the story they tell themselves about it.
   2. **Rich-life vision:** what they want from life, focused on what money can affect.
-  3. **Baseline:** the onboarding measures from the measurement framework: the CFPB 5-item well-being scale, money stress, money satisfaction and vision clarity. Simple scale answers use quick tap-to-answer replies, not typing ("chat over forms", but no typing numbers).
+  3. **Baseline:** the onboarding measures from the measurement framework: the Stryvv Score's six questions on security, satisfaction and alignment (its two couple questions come when a partner joins). Simple scale answers use quick tap-to-answer replies, not typing ("chat over forms", but no typing numbers).
 - **What they share is saved as their own records**, not just as a transcript: money-history entries, goals, and one baseline check-in with its measurements. Partners only ever see what sharing settings allow; the transcript itself is never shared.
 - **They can leave and come back.** Closing the app mid-chat resumes where they left off.
 - **When the chat ends, they land on a minimal home screen:** the "Ask Stryvv about your finances" bar at the top and the module cards from the vision, mostly empty for now, with what the chat captured shown where it fits (for example their goals under "What you're working toward"). Filling the modules properly is later work.
@@ -23,7 +23,7 @@ People can now create an account at `app.stryvv.com/signup`, but after they veri
 
 We'll know it worked when:
 - a tester can go from signup to home in one sitting, on a phone, in roughly 8 minutes, without being confused about what to do next;
-- after the chat, the database holds their money-history entries, at least one goal, and exactly one baseline check-in with the four measures, all owned by them;
+- after the chat, the database holds their money-history entries, at least one goal, and exactly one baseline check-in with their Stryvv Score and its answers, all owned by them;
 - closing the tab halfway and signing back in picks up the chat where it stopped;
 - testers say it felt like a conversation, not a form.
 
@@ -39,7 +39,7 @@ We'll know it worked when:
 - **The prompts see personal data** (money history, feelings, finances). Apply the `data-security` skill: send the model only what this conversation needs, never another person's data, and log no message content.
 - **Model output is shown safely:** render it with `lib/markdown.ts`, which escapes HTML first.
 - **The baseline is taken once.** The schema allows one baseline per person, ever, and measurements are append-only. The chat must not write a half-finished baseline that blocks a proper one later.
-- **The questionnaire wording is fixed.** The CFPB items must be asked as published, or the 0–100 score and its benchmarks don't apply. The coach can introduce them conversationally but mustn't reword them.
+- **The questionnaire wording is fixed.** The score's items must be asked exactly as written, or answers can't be compared over time (and the borrowed CFPB items lose their meaning). The coach can introduce them conversationally but mustn't reword them.
 - **Mobile-first, light and dark,** using the Stryvv Design System tokens in `components/app/`.
 - **Cost:** the whole onboarding should stay a few cents per person. The spec sets a token budget and caps the chat's length.
 - **Not financial advice.** The coach listens, reflects and asks; it doesn't recommend investments or products.
@@ -57,6 +57,10 @@ We'll know it worked when:
 - The coach runs on Claude via the Vercel AI SDK, not OpenAI.
 - The chat ends on a minimal home shell built as part of this work.
 - Signup stays hidden when this ships; testers first.
+
+## Decisions (2026-11-04)
+- The baseline uses Stryvv's own score (the Stryvv Score in the measurement framework), not the CFPB Financial Well-Being score. It has four equal parts (Security, Satisfaction, Alignment, and Unity for couples), two questions each, and borrows two CFPB questions word for word. Milestones (emergency buffer, debt, investing) are tracked separately, after onboarding.
+- The "Ask Stryvv" bar shows on home before it works; tapping it says it's coming soon.
 
 ## Open questions
 - How much structure should the chat have? A fixed sequence of topics the coach moves through, or an open conversation the coach steers until it has what it needs? (Leaning: fixed sequence, conversational within each topic; the spec decides.)
