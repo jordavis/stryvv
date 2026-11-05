@@ -44,6 +44,8 @@ Stryvv helps people find the money behaviors that hold them back and change them
 | 2026-10-01 | **Budgeting tools (YNAB, Copilot, Monarch, ...): collect data manually in v1.** Show a "Connect" button anyway and count clicks to gauge demand before building any integration. |
 | 2026-10-01 | **Reminders: email is an acceptable fallback** when web push isn't available. |
 | 2026-10-01 | **Light and dark themes are both first-class.** The app follows the phone's setting by default, with a manual override in settings. Tokens for both live in the Stryvv Design System. |
+| 2026-11-04 | **Lessons start on Skool; the app is where people act on them.** Lessons are taught in a Skool community first, and people use the Stryvv app to put what they learned into practice (goals, commitments, check-ins). The lessons move into the app later. |
+| 2026-11-04 | **Stryvv's own score.** The Stryvv Score (Security, Satisfaction, Alignment, and Unity for couples) replaces the CFPB well-being score as the headline number. Milestones such as an emergency buffer and debt are tracked separately. See [measurement-framework.md](measurement-framework.md). |
 
 ## Home screen
 
@@ -52,7 +54,7 @@ The chat bar sits at the top ("Ask Stryvv about your finances"), with suggested 
 1. **What you're working toward:** rich-life targets and next steps (pillar 2).
 2. **Your money data:** connect bank accounts and other financial systems through aggregators, and payroll later. Manual entry until those connections exist.
 3. **Behaviors** (working name; rebrand to something positive and exciting): the changes the user is actively working on (pillar 3).
-4. **Learning:** short, interactive lessons from the best available sources. They start high-level across all topics, and the user can drill deeper in any topic until the content runs out. At the deepest level, the user can talk to an expert or get book recommendations on that topic.
+4. **Learning:** short, interactive lessons from the best available sources. At first these live on Skool and the module links out to them; the in-app version below comes later. They start high-level across all topics, and the user can drill deeper in any topic until the content runs out. At the deepest level, the user can talk to an expert or get book recommendations on that topic.
 5. **Financial health scores:** the headline numbers from the measurement framework.
 6. **Upload documents:** tax returns, pay stubs and similar, to capture data that bank statements don't show.
 
@@ -60,3 +62,4 @@ The chat bar sits at the top ("Ask Stryvv about your finances"), with suggested 
 
 - Rebrand name for "Behaviors."
 - Learning content: do we license it, curate links to it, or write our own lessons with AI help and cite sources? Who are the "experts" at the deepest level?
+- **Skool integration (future, once there's demand).** Skool offers a REST API and an MCP server, but both need its VIP plan at $69/month (as of 2026-11-04, per [Skool's recording](https://www.skool.com/skool-extensions/skool-api-skool-mcp-recording)). Worth scoping when lessons are in use: for example, showing a finished Skool lesson in Stryvv and prompting the matching commitment.

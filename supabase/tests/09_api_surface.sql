@@ -37,7 +37,7 @@ select is(
   (select array_agg(p.proname::text order by p.proname)
    from pg_proc p join pg_namespace n on n.oid = p.pronamespace
    where n.nspname = 'public' and p.prosecdef and has_function_privilege('authenticated', p.oid, 'execute')),
-  array['accept_invite', 'accept_terms', 'create_invite', 'end_partnership', 'get_partner', 'preview_invite'],
+  array['accept_invite', 'accept_terms', 'create_invite', 'end_partnership', 'get_partner', 'preview_invite', 'record_baseline'],
   'only the intended RPCs are callable definer functions in public');
 
 select hasnt_extension('pg_graphql', 'GraphQL is off');

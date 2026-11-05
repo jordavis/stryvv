@@ -221,3 +221,9 @@
   .stryvv-app .sv-only-light { display: none; }
   .stryvv-app .sv-only-dark { display: block; }
 }
+
+/* The next onboarding question slides in. */
+@keyframes sv-slide-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
