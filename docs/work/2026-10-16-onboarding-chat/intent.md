@@ -14,7 +14,7 @@ People can now create an account at `app.stryvv.com/signup`, but after they veri
 - **The chat covers three things, in about 8 minutes in total:**
   1. **Money history:** how they grew up with money and the story they tell themselves about it.
   2. **Rich-life vision:** what they want from life, focused on what money can affect.
-  3. **Baseline:** the onboarding measures from the measurement framework: the Stryvv Score's six questions on security, satisfaction and alignment (its two couple questions come when a partner joins). Simple scale answers use quick tap-to-answer replies, not typing ("chat over forms", but no typing numbers).
+  3. **Baseline:** the onboarding measures from the measurement framework: the Stryvv Score's six questions on security, satisfaction and alignment, plus its two Unity questions for people married or in a relationship. Simple scale answers use quick tap-to-answer replies, not typing ("chat over forms", but no typing numbers).
 - **What they share is saved as their own records**, not just as a transcript: money-history entries, goals, and one baseline check-in with its measurements. Partners only ever see what sharing settings allow; the transcript itself is never shared.
 - **They can leave and come back.** Closing the app mid-chat resumes where they left off.
 - **When the chat ends, they land on a minimal home screen:** the "Ask Stryvv about your finances" bar at the top and the module cards from the vision, mostly empty for now, with what the chat captured shown where it fits (for example their goals under "What you're working toward"). Filling the modules properly is later work.
@@ -59,7 +59,7 @@ We'll know it worked when:
 - Signup stays hidden when this ships; testers first.
 
 ## Decisions (2026-11-04)
-- The baseline uses Stryvv's own score (the Stryvv Score in the measurement framework), not the CFPB Financial Well-Being score. It has four equal parts (Security, Satisfaction, Alignment, and Unity for couples), two questions each, and borrows two CFPB questions word for word. Milestones (emergency buffer, debt, investing) are tracked separately, after onboarding.
+- The baseline uses Stryvv's own score (the Stryvv Score in the measurement framework), not the CFPB Financial Well-Being score. It has four equal parts (Security, Satisfaction, Alignment, and Unity for people in a relationship, asked at the baseline), two questions each, and borrows two CFPB questions word for word. Milestones (emergency buffer, debt, investing) are tracked separately, after onboarding.
 - The "Ask Stryvv" bar shows on home before it works; tapping it says it's coming soon.
 
 ## Open questions

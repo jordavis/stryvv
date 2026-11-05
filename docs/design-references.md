@@ -39,7 +39,7 @@ These are interaction patterns taken from a reference health app. Jordan likes t
 | Medical profile chat (allergies, conditions, treatments, family history) | Onboarding chat: money history, rich-life vision, baseline measures |
 | Review cards before saving | Confirming captured money-history themes, goals and commitments |
 | "I have no known X" | "Nothing comes to mind" / "Not right now" |
-| Height/weight form step | Baseline numbers (savings, debt ranges) and the Stryvv Score's 6 taps (8 for couples) |
+| Height/weight form step | Baseline numbers (savings, debt ranges) and the Stryvv Score's taps (6, or 8 for people in a relationship) |
 | Goal card with % to target | Rich-life goals |
 | Biomarkers / optimization score | Stryvv Score and the other headline numbers |
 | Wearables tiles | Money data tiles (from MX or manual entry) |

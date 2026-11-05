@@ -26,9 +26,9 @@ From: intent.md (2026-10-16). Status: draft.
 12. Nothing from steps 1 and 3 is written to `money_history_entries` or `goals` before the person presses save.
 
 **Baseline (step 2)**
-13. The baseline is the Stryvv Score, Stryvv's own measure, defined in [measurement-framework.md → The Stryvv Score](../../measurement-framework.md#the-stryvv-score). It asks items 1–6 (Security, Satisfaction, Alignment) in the order and wording listed there. The two Unity items are for couples and are asked when a partner joins, which is later work: nobody can have a partner during onboarding yet.
+13. The baseline is the Stryvv Score, Stryvv's own measure, defined in [measurement-framework.md → The Stryvv Score](../../measurement-framework.md#the-stryvv-score). It first asks "Are you married or in a relationship?" (Yes / No), then items 1–6 (Security, Satisfaction, Alignment) in the order and wording listed there, and for a yes the two Unity items too. They're about how the person sees their partner, so they work before the partner joins.
 14. Each item is a coach-style bubble with five labelled tap answers. There's no typing, and the coach model isn't involved: the wording is fixed in code.
-15. The answers are saved together, all or nothing, when the last item is answered. The result is exactly one baseline check-in with eleven measurements: the six answers (metric names as in the framework, each 0–4), the three part scores (`score_security`, `score_satisfaction`, `score_alignment`, each 0–100), `stryvv_score` (0–100) and `stryvv_score_version` (`1`). The scores are computed on the server.
+15. The answers are saved together, all or nothing, when the last item is answered. The result is exactly one baseline check-in with eleven measurements, or fourteen for someone in a relationship: the six (or eight) answers (metric names as in the framework, each 0–4), the part scores (`score_security`, `score_satisfaction`, `score_alignment`, and `score_unity` for a yes, each 0–100), `stryvv_score` (0–100) and `stryvv_score_version` (`1`). The scores are computed on the server, which also records the answer in `profiles.in_relationship`.
 16. If saving fails, nothing is written and the person can try again. A second baseline can never be created.
 17. "Skip for now" on step 2 saves nothing. Home then shows "Take your baseline" in the scores card, which reopens step 2.
 
@@ -41,7 +41,7 @@ From: intent.md (2026-10-16). Status: draft.
 21. Home shows a greeting with the person's first name ("Welcome to Stryvv, Johnny"), the "Ask Stryvv about your finances" bar, and these cards:
     - **What you're working toward:** the saved goals. If there are none, an empty state with "Set a goal with Stryvv", which reopens step 3.
     - **Your money story:** the saved money-history entries (titles and kinds). If there are none, an empty state that reopens step 1.
-    - **Your scores:** the Stryvv Score as a ring, labelled "Your starting point", with a smaller ring for each part (Security, Satisfaction, Alignment). If there's no baseline, "Take your baseline".
+    - **Your scores:** the Stryvv Score as a ring, labelled "Your starting point", with a smaller ring for each part (Security, Satisfaction, Alignment, and Unity for someone in a relationship). If there's no baseline, "Take your baseline".
     - **Money Moves:** an empty state only ("You'll pick your first one after setting a goal").
 22. The ask bar is visible but not wired up yet. Tapping it shows "Ask Stryvv is coming soon".
 23. Home has a sign-out control.
@@ -68,13 +68,13 @@ Mockups: the "Money history chat", "Review before saving" and "Home, first visit
 ## Data and API changes
 
 **Schema change: one new migration.**
-- `public.record_baseline(answers jsonb)`, a security definer function that checks `auth.uid()`, validates the six answers (each 0–4, none missing, no others), computes the three part scores and the Stryvv Score with the version 1 formula, and inserts the check-in and its measurements in one transaction. It raises a clear error if a baseline already exists. `EXECUTE` goes to `authenticated` only. Lookup helpers, if any, live in `private`.
+- `public.record_baseline(answers jsonb)`, a security definer function that checks `auth.uid()`, validates the answers (the six, or the six plus both Unity answers; each 0–4, none missing, no others), computes the part scores and the Stryvv Score with the version 1 formula, and inserts the check-in and its measurements in one transaction. It raises a clear error if a baseline already exists. `EXECUTE` goes to `authenticated` only. Lookup helpers, if any, live in `private`.
 - A check constraint on `profiles.onboarding_stage`, allowing `not_started`, `money_story`, `baseline`, `rich_life` and `done`. Existing rows are `not_started`.
 - One onboarding conversation per person: a unique partial index on `conversations (owner_id) where kind = 'onboarding'`.
 - Narrow the `conversations` update grant to `topic`, so `kind` can't be changed after creation.
 - pgTAP tests for each: the baseline is all-or-nothing and can't be repeated; out-of-range or missing answers are rejected; known answers give the expected part scores and total (best, worst and a mixed case); a stranger can't call the function for someone else (it only ever writes the caller's own rows); the stage values are enforced; a second onboarding conversation is refused.
 
-**Uses existing tables:** `conversations` (kind `onboarding`), `messages`, `money_history_entries`, `goals`, `check_ins`, `measurements` and `profiles`. No other column changes.
+**Uses existing tables:** `conversations` (kind `onboarding`), `messages`, `money_history_entries`, `goals`, `check_ins`, `measurements` and `profiles`. One new column: `profiles.rich_life_vision` (see Changes while building).
 
 **App**
 - `POST /api/onboarding/chat`: a route handler that streams the coach's reply with the Vercel AI SDK (`streamText`, `@ai-sdk/anthropic`, model `claude-sonnet-5-5`). The request carries only the new message text and the conversation id. The server checks the user, loads the history from the database, saves the user's message before calling the model, and saves the reply when it finishes.
@@ -121,3 +121,15 @@ Mockups: the "Money history chat", "Review before saving" and "Home, first visit
 - **How much structure should the chat have?** → A fixed sequence of steps and topics (requirement 3), conversational within each topic, with at most two follow-ups (requirement 8). The server, not the model, decides which step comes next.
 - **Should the person see and edit what Stryvv heard before it's saved?** → Yes. Review cards before saving, as in the "Review before saving" mockup (requirements 9–12).
 - **Which Claude model?** → `claude-sonnet-5-5` for the coach: strong at warm, careful conversation and reliable tool calls, at a moderate cost. The plan measures the cost per onboarding against the $0.10 budget (requirement 26) and falls back to `claude-haiku-5-5` if it runs over.
+
+## Changes while building (2026-11-04)
+
+- **The rich-life vision has a home.** Requirement 11 shows a vision card, but no table held it. It's saved in a new column, `profiles.rich_life_vision` (up to 2,000 characters, private to the person, editable by them), and shown at the top of "What you're working toward".
+- **Draft cards travel with corrections.** A typed correction at the review sends the person's edited cards with it, so the coach updates their edits instead of starting over. The request still never carries history or ids beyond the conversation.
+- **Answer chips are fixed per topic in code** (`lib/onboarding/steps.ts`), not generated by the model: cheaper, and the same every time.
+- **The server moves topics on.** After three answers or the shortcut, the server advances and tells the coach the next question; before that the coach may move on early with a `next_topic` tool. The pointer is saved only by the server. (The model doesn't accept forced tool calls.)
+- **Review cards come back as structured output** (a closed JSON schema) and reach the screen as data, not as tool calls.
+- **Requirement 26's 400-token cap** applies to what the person reads. The model always thinks and its thinking counts toward the API's cap, so the API cap is 1,200 per reply and 4,000 for review cards, at low effort.
+- **History can't be backdated.** Insert grants on `conversations` (`kind`, `topic`) and `messages` (`conversation_id`, `role`, `content`) are narrowed too, as `check_ins` already were.
+- **No prompt caching.** The system prompt changes per topic and is under Anthropic's minimum cacheable size, so caching wouldn't apply. Cost is kept down instead by sending only the current step's messages.
+- **Unity before a partner joins** (decided 2026-11-04, after testing showed no Unity ring). The baseline asks "Are you married or in a relationship?" first; a yes adds the two Unity items, a fourth ring, and `profiles.in_relationship`. Singles keep three parts.

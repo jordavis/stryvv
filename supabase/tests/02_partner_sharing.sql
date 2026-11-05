@@ -5,7 +5,8 @@ select plan(21);
 
 select tests.seed_linked_couple();
 -- The partner can't see the owner's conversation, so remember its id for the write test below.
-select set_config('tests.conversation_id', (select id::text from public.conversations), true);
+select set_config('tests.conversation_id',
+  (select id::text from public.conversations where owner_id = current_setting('tests.owner_id')::uuid), true);
 reset role; select tests.act_as('partner@test.dev');
 
 -- Reads: everything is shared by default.
@@ -28,7 +29,9 @@ update public.goals set title = 'changed' where title = 'Personal goal';
 delete from public.goals where title = 'Personal goal';
 delete from public.money_history_entries;
 reset role;
-select is((select title from public.money_history_entries), 'Spending on fun is risky', 'partner cannot edit or delete the owner''s money history');
+select is(
+  (select title from public.money_history_entries where owner_id = current_setting('tests.owner_id')::uuid),
+  'Spending on fun is risky', 'partner cannot edit or delete the owner''s money history');
 select is((select count(*) from public.goals where title = 'Personal goal'), 1::bigint, 'partner cannot edit or delete the owner''s personal goal');
 
 reset role; select tests.act_as('partner@test.dev');

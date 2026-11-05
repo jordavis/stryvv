@@ -3,14 +3,14 @@ import { NextResponse, type NextRequest } from "next/server"
 
 // Route rules (spec: docs/work/2026-10-14-signup-email-code/spec.md, requirements 12-14).
 // - Public pages anyone can open.
-// - Sign-up / sign-in pages: public, but a signed-in person is sent to /welcome.
+// - Sign-up / sign-in pages: public, but a signed-in person is sent to /home.
 // - Signed-in pages: need a session, otherwise /login.
 // - Anything else (including old links to the survey, dashboard and invites) goes to the holding page.
 const PUBLIC_PAGES = ["/", "/coming-soon", "/terms", "/privacy"]
 const AUTH_PAGES = ["/signup", "/verify", "/login", "/forgot-password"]
-const SIGNED_IN_PAGES = ["/welcome", "/set-password"]
+const SIGNED_IN_PAGES = ["/home", "/welcome", "/set-password"]
 const HOLDING_PAGE = "/coming-soon"
-const HOME_WHEN_SIGNED_IN = "/welcome"
+const HOME_WHEN_SIGNED_IN = "/home"
 
 const matches = (pathname: string, routes: string[]) =>
   routes.some((route) => pathname === route || pathname.startsWith(route + "/"))

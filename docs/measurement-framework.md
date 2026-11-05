@@ -23,13 +23,13 @@ Decided 2026-11-04: Stryvv uses its own 0–100 score instead of the CFPB Financ
 | **Security** | Are your basic needs covered, now and later? | Ramsey's emergency fund and debt-free steps; Housel's room for error and independence |
 | **Satisfaction** | Is what you have enough, and can you rest easy? | Brooks: satisfaction = what you have ÷ what you want; Housel's "enough" and "does this help me sleep at night?" |
 | **Alignment** | Does your spending match what matters to you? | Housel: spending reveals values; Sethi's conscious spending; Ramsey's monthly budget |
-| **Unity** (couples only) | Are you and your partner on the same page? | Sethi's shared rich life; Ramsey's spouses as a team; Brooks: other people are what make money bring happiness |
+| **Unity** (people in a relationship) | Are you and your partner on the same page? | Sethi's shared rich life; Ramsey's spouses as a team; Brooks: other people are what make money bring happiness |
 
 Every part counts equally and has its own ring. A low part doesn't hold the others back: someone still building Security can score well on Satisfaction and Alignment.
 
 ### Items (version 1)
 
-Two items per part, asked in this order. Everyone answers items 1–6; items 7–8 are asked only once a partner has joined. Every item is "How well does this describe you?" with five tap answers: Completely · Very well · Somewhat · Very little · Not at all, stored 0–4 in that order (0 = Completely).
+Two items per part, asked in this order. First comes "Are you married or in a relationship?" (Yes / No, stored as `profiles.in_relationship`). Everyone answers items 1–6; items 7–8 are asked only of people who say yes. They're about how the person sees their partner, so they work before the partner joins Stryvv. Every item is "How well does this describe you?" with five tap answers: Completely · Very well · Somewhat · Very little · Not at all, stored 0–4 in that order (0 = Completely).
 
 | # | Part | Metric | Item | Source |
 |---|---|---|---|---|
@@ -46,11 +46,13 @@ Two items per part, asked in this order. Everyone answers items 1–6; items 7�
 
 1. Turn each answer into 0–100: Completely 100 · Very well 75 · Somewhat 50 · Very little 25 · Not at all 0 (that is, (4 − stored answer) × 25).
 2. Each part = the average of its two items (`score_security`, `score_satisfaction`, `score_alignment`, `score_unity`).
-3. **Stryvv Score** (`stryvv_score`) = the average of the parts the person has: three without a partner, four with one. Adding a partner changes what the score is made of, so the couple view marks where Unity started counting rather than comparing across that point.
+3. **Stryvv Score** (`stryvv_score`) = the average of the parts the person has: three for someone on their own, four for someone in a relationship. If that changes later (a new relationship, or a breakup), what the score is made of changes too, so trends mark where Unity started or stopped counting rather than comparing across that point.
 4. Round only when storing: the parts and the total are each stored as whole numbers (halves round up), and the total is computed from the unrounded parts.
 5. Store `stryvv_score_version` = 1 with every score. If the formula changes, raise the version and recompute old scores from the stored answers.
 
-Example, without a partner: Security answers Very well and Somewhat (62.5), Satisfaction Very little and Somewhat (37.5), Alignment Completely and Very well (87.5). Stored parts: 63, 38 and 88. Stryvv Score: (62.5 + 37.5 + 87.5) ÷ 3 = 62.5, stored as 63.
+Example, on your own: Security answers Very well and Somewhat (62.5), Satisfaction Very little and Somewhat (37.5), Alignment Completely and Very well (87.5). Stored parts: 63, 38 and 88. Stryvv Score: (62.5 + 37.5 + 87.5) ÷ 3 = 62.5, stored as 63.
+
+Example, in a relationship: the same answers plus Completely on both Unity items give Unity 100 and a Stryvv Score of (62.5 + 37.5 + 87.5 + 100) ÷ 4 = 71.875, stored as 72.
 
 ### Couples
 
@@ -75,7 +77,7 @@ Tracked separately from the Stryvv Score and never blended into it (principle 7)
 ### 1. Financial health
 | Measure | Instrument | Cadence |
 |---|---|---|
-| Overall financial health | **Stryvv Score** (above): 6 items, or 8 for couples, 0–100, with a ring per part | Baseline, then monthly |
+| Overall financial health | **Stryvv Score** (above): 6 items, or 8 for people in a relationship, 0–100, with a ring per part | Baseline, then monthly |
 
 ### 2. Confidence and literacy
 | Measure | Instrument | Cadence |
@@ -111,8 +113,7 @@ See **Milestones** above.
 
 ## Proposed cadence (what the user actually experiences)
 
-- **Onboarding (in chat, about a minute of measurement):** the Stryvv Score's six items. Self-efficacy and literacy are spread over the first week.
-- **When a partner joins:** the two Unity items, for each partner.
+- **Onboarding (in chat, about a minute of measurement):** the relationship question and the Stryvv Score's six items, or eight for people in a relationship. Self-efficacy and literacy are spread over the first week.
 - **Weekly pulse (~30 sec, in chat):** commitment adherence, values alignment; plus conflict for couples.
 - **Monthly check-in (~3 min):** the Stryvv Score's items, milestones, goal progress; plus wedge/bond for couples. Good to pair with a couple's money date.
 - **Quarterly review:** self-efficacy and vision clarity, plus a coach-written "then vs. now" story.
@@ -120,7 +121,7 @@ See **Milestones** above.
 ## Headline numbers shown to users
 
 Show only a few, so the home view stays simple:
-1. **Stryvv Score** (0–100, with a ring each for Security, Satisfaction, Alignment and, for couples, Unity): the overall number.
+1. **Stryvv Score** (0–100, with a ring each for Security, Satisfaction, Alignment and, for people in a relationship, Unity): the overall number.
 2. **Commitments kept** (% this month): is behavior actually changing?
 3. **Rich life progress**: goals on track.
 4. **Couple alignment** (couples only): mainly the wedge/bond trend and the gap.

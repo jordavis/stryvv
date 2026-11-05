@@ -12,7 +12,7 @@ Run three passes and tag each finding with its pass:
 
 ## What Important means here
 
-Important = would break user-visible behavior, leak data across people, expose a secret, corrupt or lose data, or burn money (unbounded OpenAI calls, email loops). Everything else is a nit.
+Important = would break user-visible behavior, leak data across people, expose a secret, corrupt or lose data, or burn money (unbounded model calls to Anthropic, email loops). Everything else is a nit.
 
 ## Cap the nits
 

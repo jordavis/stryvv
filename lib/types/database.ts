@@ -221,13 +221,13 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "created_at": string,"first_name": string,"id": string,"last_name": string,"onboarding_stage": string,"phone": string | null,"terms_accepted_at": string | null,"terms_version": string | null,"updated_at": string
+                    "created_at": string,"first_name": string,"id": string,"in_relationship": boolean | null,"last_name": string,"onboarding_stage": string,"phone": string | null,"rich_life_vision": string | null,"terms_accepted_at": string | null,"terms_version": string | null,"updated_at": string
                   }
                   Insert: {
-                    "created_at"?: string,"first_name"?: string,"id": string,"last_name"?: string,"onboarding_stage"?: string,"phone"?: string | null,"terms_accepted_at"?: string | null,"terms_version"?: string | null,"updated_at"?: string
+                    "created_at"?: string,"first_name"?: string,"id": string,"in_relationship"?: boolean | null,"last_name"?: string,"onboarding_stage"?: string,"phone"?: string | null,"rich_life_vision"?: string | null,"terms_accepted_at"?: string | null,"terms_version"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "created_at"?: string,"first_name"?: string,"id"?: string,"last_name"?: string,"onboarding_stage"?: string,"phone"?: string | null,"terms_accepted_at"?: string | null,"terms_version"?: string | null,"updated_at"?: string
+                    "created_at"?: string,"first_name"?: string,"id"?: string,"in_relationship"?: boolean | null,"last_name"?: string,"onboarding_stage"?: string,"phone"?: string | null,"rich_life_vision"?: string | null,"terms_accepted_at"?: string | null,"terms_version"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -286,6 +286,9 @@ isOneToOne: false
 { Args: { "_code": string }; Returns: {
               "inviter_first_name": string,"valid": boolean
             }[]
+                           },
+"record_baseline":
+{ Args: { "answers": Json }; Returns: string
                            }
           }
           Enums: {

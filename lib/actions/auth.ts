@@ -101,7 +101,7 @@ export async function verifyCode(_prev: AuthFormState, formData: FormData): Prom
   logAuthError("accept_terms", termsError)
 
   await forgetEmail("pending")
-  redirect("/welcome")
+  redirect("/home")
 }
 
 export async function resendCode(): Promise<AuthFormState> {
@@ -152,7 +152,7 @@ export async function signIn(_prev: AuthFormState, formData: FormData): Promise<
     return { status: "error", message: outcome.message, values }
   }
 
-  redirect("/welcome")
+  redirect("/home")
 }
 
 export async function requestPasswordReset(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
@@ -212,7 +212,7 @@ export async function resetPassword(_prev: AuthFormState, formData: FormData): P
     redirect(updated.field === "password" ? "/set-password?problem=weak" : "/set-password?problem=failed")
   }
 
-  redirect("/welcome")
+  redirect("/home")
 }
 
 /** The signed-in "choose a new password" page. */
@@ -232,7 +232,7 @@ export async function setNewPassword(_prev: AuthFormState, formData: FormData): 
       : { status: "error", message: updated.message }
   }
 
-  redirect("/welcome")
+  redirect("/home")
 }
 
 export async function signOut() {
