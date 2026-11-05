@@ -1,6 +1,6 @@
 ---
 name: data-security
-description: Stryvv data-access and privacy rules. Use whenever writing or reviewing code that queries Supabase, adds a server action or API route, changes auth or proxy.ts, sends user data to Anthropic or Resend, logs anything, or changes database schema/RLS.
+description: Stryvv data-access and privacy rules. Use whenever writing or reviewing code that queries Supabase, adds a server action or API route, changes auth or proxy.ts, sends user data to Anthropic, OpenAI or Resend, logs anything, or changes database schema/RLS.
 ---
 
 # Stryvv data security
@@ -19,6 +19,7 @@ The schema is in `supabase/migrations/` (see `CLAUDE.md` → Data).
 5. **Validate input with Zod** at every boundary (actions, routes), with size limits on free text (for chat, cap each message, e.g. `z.string().min(1).max(10000)`, and the number of messages per request).
 6. **No PII or answers in logs.** Don't `console.log` chat content, money history, goals, check-in answers, emails, phone numbers or names. Log IDs and error codes.
 7. **Minimize what goes to the model (Anthropic).** Send only the fields the prompt needs. No emails, phone numbers or last names, and no other person's data beyond what RLS returns for the signed-in user. Build AI context through the session client, so the same sharing rules apply to what the coach sees. Treat model output as untrusted: render it through `markdownToHtml` in `lib/markdown.ts` (which escapes HTML), never through raw `dangerouslySetInnerHTML` of model text.
+   **Voice (OpenAI transcription):** send only the recording itself, a fixed description of the setting and fixed keywords. Never store or log audio or transcripts; the transcript is kept only if the person sends it as a chat message.
 8. **Secrets stay server-side.** Only `NEXT_PUBLIC_*` vars may reach the browser. `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY` and `RESEND_API_KEY` never appear in client code.
 9. **Invite codes are bearer tokens.** Rate-limit or otherwise protect anything that looks them up, and never list them.
 

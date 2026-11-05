@@ -251,6 +251,19 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"transcription_requests": {
+                  Row: {
+                    "bytes": number,"created_at": string,"id": string,"owner_id": string
+                  }
+                  Insert: {
+                    "bytes": number,"created_at"?: string,"id"?: string,"owner_id"?: string
+                  }
+                  Update: {
+                    "bytes"?: number,"created_at"?: string,"id"?: string,"owner_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 }
           }
           Views: {
