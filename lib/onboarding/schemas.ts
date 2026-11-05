@@ -5,7 +5,8 @@
 import { z } from "zod"
 import { BASELINE_ITEMS, UNITY_ITEMS } from "./baseline"
 
-export const MESSAGE_MAX = 2000
+/** Fits a full 5-minute voice answer (about 4,000 characters of speech); the table allows 20,000. */
+export const MESSAGE_MAX = 5000
 
 const chip = z.string().trim().min(1).max(40)
 

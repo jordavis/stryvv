@@ -48,7 +48,7 @@ From: intent.md (2026-10-16). Status: draft.
 24. The coach-mark tour, the tab bar, Connect your accounts, Learning and Upload documents are not built in this release.
 
 **Limits**
-25. A message is 1–2,000 characters. The server refuses more than 60 user messages in one onboarding conversation and more than 20 messages a minute from one person, with a friendly "Let's pause for a moment" message.
+25. A message is 1–5,000 characters (raised from 2,000 by the voice-input work, so a full 5-minute spoken answer fits). The server refuses more than 60 user messages in one onboarding conversation and more than 20 messages a minute from one person, with a friendly "Let's pause for a moment" message.
 26. Each coach reply is capped at 400 output tokens. The whole onboarding must cost under $0.10 in model usage per person on the measured test runs (see Proof in plan.md).
 
 ## User experience

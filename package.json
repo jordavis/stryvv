@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.138",
-    "@ai-sdk/openai": "^3.0.48",
+    "@ai-sdk/openai": "^3.0.137",
     "@ai-sdk/react": "^3.0.326",
     "@hookform/resolvers": "^5.2.2",
     "@supabase/ssr": "^0.8.0",

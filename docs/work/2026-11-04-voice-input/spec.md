@@ -17,7 +17,7 @@ From: intent.md (2026-11-04). Status: accepted (Jordan Davis, 2026-11-04).
 8. The transcript is added to the end of whatever is already in the message box (with a space between), the box is focused, and the cursor goes to the end. **It never sends itself.** If chips are selected, they stay selected.
 9. If the transcript is empty: "I didn't catch anything. Try again, or type your answer."
 10. If transcription fails: "Couldn't transcribe that. Try again" with a Retry button that resends the same recording, which is kept in memory until it succeeds or the person records again, cancels, or leaves.
-11. A message box that would go over 2,000 characters after adding the transcript keeps the first 2,000 and shows "That's more than one message can hold. Send this part, then record the rest."
+11. A chat message holds up to 5,000 characters, enough for a full 5-minute answer (raised from 2,000 on 2026-11-04, when a 4½-minute test lost its second half). A message box that would still go over 5,000 after adding the transcript keeps the first 5,000 and shows "That's more than one message can hold. Send this part, then record the rest."
 
 **Limits**
 12. The server refuses audio over 4 MB, with a type other than `audio/webm` or `audio/mp4`, or from someone not signed in.
@@ -57,7 +57,7 @@ Mockups: none yet; follow the ChatComposer in the Stryvv Core Screens canvas. Ne
   2. Reads `multipart/form-data` with one `audio` file; checks type and size (requirement 12).
   3. Counts the person's `transcription_requests` in the last minute and day (requirement 13), then inserts a row **before** calling OpenAI, so failed calls still count.
   4. Calls OpenAI `gpt-transcribe` with `keywords: ["Stryvv"]` and a short, fixed `prompt` describing the setting (a person describing their money history and goals; may mention dollar amounts). No personal details in the prompt.
-  5. Returns `{ text }` (trimmed, capped at 2,000 characters). Logs ids, bytes, duration and error codes only.
+  5. Returns `{ text }` (trimmed, capped at 5,000 characters). Logs ids, bytes, duration and error codes only.
 - `lib/voice/`: pure, tested helpers: picking the recording type (`pickRecordingType`), the size and length limits, the limit check (`checkTranscriptionLimits`), and joining the transcript to existing text (`appendTranscript`, requirement 8 and 11).
 - `components/app/onboarding/voice-recorder.tsx` (client): MediaRecorder, timer, auto-stop, Cancel/Stop, Retry; used by `chat-composer.tsx`.
 - **Package:** `@ai-sdk/openai` upgraded within the v6 line (the `ai-v6` tag, 3.0.137 today) and `experimental_transcribe` from `ai`, if that version passes `keywords` through to `gpt-transcribe`; otherwise the route calls the installed `openai` package directly. The plan confirms which.
