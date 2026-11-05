@@ -3,7 +3,7 @@
 import { Dialog } from "radix-ui"
 import { useEffect, useState } from "react"
 import { figtree, manrope } from "@/lib/fonts"
-import { sheetFrame } from "@/lib/sheet-frame"
+import { isKeyboardOpen, sheetFrame } from "@/lib/sheet-frame"
 import { cn } from "@/lib/utils"
 
 /**
@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
  * It can't be dismissed by tapping outside or pressing Escape: the content offers its own way out.
  */
 export function Sheet({ open, title, children }: { open: boolean; title: string; children: React.ReactNode }) {
-  const frame = useSheetFrame()
+  const { frame, keyboardOpen } = useSheetFrame()
 
   return (
     <Dialog.Root open={open}>
@@ -25,6 +25,8 @@ export function Sheet({ open, title, children }: { open: boolean; title: string;
         <Dialog.Overlay className="fixed inset-0 z-40 bg-[rgba(4,14,28,0.62)] backdrop-blur-[3px]" />
         <Dialog.Content
           aria-describedby={undefined}
+          // Lets the content compact itself while typing (e.g. the step header).
+          data-keyboard={keyboardOpen ? "open" : "closed"}
           onEscapeKeyDown={(e) => e.preventDefault()}
           onPointerDownOutside={(e) => e.preventDefault()}
           onInteractOutside={(e) => e.preventDefault()}
@@ -35,7 +37,7 @@ export function Sheet({ open, title, children }: { open: boolean; title: string;
               : undefined
           }
           className={cn(
-            "stryvv-app",
+            "stryvv-app group/sheet",
             manrope.variable,
             figtree.variable,
             "fixed inset-x-0 top-[var(--sv-sheet-top,40px)] z-50 flex h-[var(--sv-sheet-height,calc(100dvh-40px))] flex-col overflow-hidden",
@@ -55,14 +57,29 @@ export function Sheet({ open, title, children }: { open: boolean; title: string;
 /**
  * The sheet's place on a phone, from the visible part of the page. iPhone Safari doesn't resize the
  * page for the keyboard: it shrinks the visible area and scrolls it (both reported by visualViewport,
- * through "resize" and "scroll"), so the sheet has to follow both.
+ * through "resize" and "scroll"), so the sheet has to follow both. The page's full height is the
+ * tallest visible height seen at this width (some browsers also shrink innerHeight for the keyboard).
  */
-function useSheetFrame(): { top: number; height: number } | null {
-  const [frame, setFrame] = useState<{ top: number; height: number } | null>(null)
+function useSheetFrame(): { frame: { top: number; height: number } | null; keyboardOpen: boolean } {
+  const [state, setState] = useState<{ frame: { top: number; height: number } | null; keyboardOpen: boolean }>({
+    frame: null,
+    keyboardOpen: false,
+  })
   useEffect(() => {
     const viewport = window.visualViewport
     if (!viewport) return
-    const update = () => setFrame(sheetFrame({ height: viewport.height, offsetTop: viewport.offsetTop }))
+    let width = viewport.width
+    let pageHeight = viewport.height
+    const update = () => {
+      // A new width means a rotation: start measuring the full height again.
+      if (viewport.width !== width) {
+        width = viewport.width
+        pageHeight = viewport.height
+      }
+      pageHeight = Math.max(pageHeight, viewport.height)
+      const visible = { height: viewport.height, offsetTop: viewport.offsetTop, pageHeight }
+      setState({ frame: sheetFrame(visible), keyboardOpen: isKeyboardOpen(visible) })
+    }
     update()
     viewport.addEventListener("resize", update)
     viewport.addEventListener("scroll", update)
@@ -71,5 +88,5 @@ function useSheetFrame(): { top: number; height: number } | null {
       viewport.removeEventListener("scroll", update)
     }
   }, [])
-  return frame
+  return state
 }

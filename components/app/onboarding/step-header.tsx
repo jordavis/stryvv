@@ -1,6 +1,10 @@
 import { cn } from "@/lib/utils"
 
-/** "STEP 1 OF 3", the step title, the current topic ("Money history · 2/4"), progress and Skip. */
+/**
+ * "STEP 1 OF 3", the step title, the current topic ("Money history · 2/4"), progress and Skip.
+ * While the keyboard is open (the sheet's data-keyboard="open"), it shrinks to one line so the
+ * messages get the room.
+ */
 export function StepHeader({
   stepNumber,
   title,
@@ -18,12 +22,19 @@ export function StepHeader({
   skipping?: boolean
 }) {
   return (
-    <header className="flex flex-col gap-3 border-b border-sv-border bg-sv-surface px-4 pt-4 pb-3">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-col gap-0.5">
+    <header
+      className={cn(
+        "flex flex-col gap-3 border-b border-sv-border bg-sv-surface px-4 pt-4 pb-3",
+        "group-data-[keyboard=open]/sheet:gap-2 group-data-[keyboard=open]/sheet:pt-2 group-data-[keyboard=open]/sheet:pb-2"
+      )}
+    >
+      <div className="flex items-start justify-between gap-3 group-data-[keyboard=open]/sheet:items-center">
+        <div className="flex min-w-0 flex-col gap-0.5 group-data-[keyboard=open]/sheet:flex-row group-data-[keyboard=open]/sheet:items-baseline group-data-[keyboard=open]/sheet:gap-2">
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-sv-ink-muted">Step {stepNumber} of 3</p>
-          <h2 className="font-sv-display text-xl font-bold leading-7 tracking-[-0.01em]">{title}</h2>
-          {topic ? <p className="text-sm text-sv-ink-muted">{topic}</p> : null}
+          <h2 className="font-sv-display text-xl font-bold leading-7 tracking-[-0.01em] group-data-[keyboard=open]/sheet:sr-only">
+            {title}
+          </h2>
+          {topic ? <p className="truncate text-sm text-sv-ink-muted">{topic}</p> : null}
         </div>
         <button
           type="button"
